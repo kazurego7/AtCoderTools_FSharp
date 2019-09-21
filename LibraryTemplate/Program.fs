@@ -30,10 +30,19 @@ module AtCoderLibrary =
             printf "\n"
 
     module NumericFunctions =
-        let powMod b n divisor =
-            List.replicate b n
-            |> Seq.fold (fun accm i -> accm * i % divisor) 1L
-            |> int32
+        type Mod =
+            { divisor : int }
+
+            member this.Pow b n =
+                List.replicate b n
+                |> Seq.fold (fun accm i -> accm * i % int64 this.divisor) 1L
+                |> int32
+
+            member this.Perm n k =
+                if k > n then 0
+                else
+                    seq { n - k + 1..n }
+                    |> Seq.fold (fun i m -> i * m % this.divisor) 1
 
 open AtCoderLibrary
 open InputOutputs
