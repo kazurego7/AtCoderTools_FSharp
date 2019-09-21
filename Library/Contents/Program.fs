@@ -1,10 +1,12 @@
 ﻿open System
+open Microsoft.FSharp.Collections
 
-module BasicLibrary =
-    let interval startInclusive endExclusive =
-        seq { startInclusive..(endExclusive - 1) } |> Seq.toList
+module MyBasicLibrary =
+    module List =
+        let interval startInclusive endExclusive =
+            seq { startInclusive..(endExclusive - 1) } |> Seq.toList
 
-open BasicLibrary
+open MyBasicLibrary
 
 module AtCoderLibrary =
     module InputOutputs =
@@ -60,8 +62,8 @@ module AtCoderLibrary =
 
             member this.CombTable (nMax : int32) (kMax : int32) =
                 let table = Array2D.zeroCreate nMax kMax
-                for n in interval 0 (nMax + 1) do
-                    for k in interval 0 (kMax + 1) do
+                for n in List.interval 0 (nMax + 1) do
+                    for k in List.interval 0 (kMax + 1) do
                         if n < k then table.[n, k] <- -1
                         else if k = 0 then table.[n, k] <- 1
                         else
