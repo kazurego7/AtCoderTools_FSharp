@@ -3,10 +3,6 @@
 open System
 open Microsoft.FSharp.Collections
 
-module List =
-    let interval startInclusive endExclusive =
-        seq { startInclusive..(endExclusive - 1) } |> Seq.toList
-
 module InputOutputs =
     let read() = Console.ReadLine()
     let reads() = read().Split()
@@ -58,8 +54,8 @@ module NumericFunctions =
 
         member this.CombTable (nMax : int32) (kMax : int32) =
             let table = Array2D.zeroCreate nMax kMax
-            for n in List.interval 0 (nMax + 1) do
-                for k in List.interval 0 (kMax + 1) do
+            for n in 0..nMax do
+                for k in 0..kMax do
                     if n < k then table.[n, k] <- -1
                     else if k = 0 then table.[n, k] <- 1
                     else
@@ -67,6 +63,10 @@ module NumericFunctions =
                                         + int64 table.[n - 1, k]
                                           % int64 this.divisor |> int32
             table
+
+    module List =
+        let interval startInclusive endExclusive =
+            seq { startInclusive..(endExclusive - 1) } |> Seq.toList
 
 open InputOutputs
 open NumericFunctions
