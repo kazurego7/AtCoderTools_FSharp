@@ -35,8 +35,11 @@ module NumericFunctions =
             |> int32
 
         member this.Perm (n : int32) (k : int32) : int32 =
-            if k > n then 0
-            else
+            match (n, k) with
+            | (n, _) when n < 0 -> invalidArg "n" "n >= 0"
+            | (_, k) when k < 0 -> invalidArg "k" "k >= 0"
+            | (n, k) when k > n -> 0
+            | _ ->
                 [ n - k + 1..n ]
                 |> List.fold
                        (fun product m -> product * int64 m % int64 this.divisor)
