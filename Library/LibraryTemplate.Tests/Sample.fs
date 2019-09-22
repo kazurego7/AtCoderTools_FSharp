@@ -1,7 +1,7 @@
 module Tests
 
 open Expecto
-open AtCoder.AtCoderLibrary
+open AtCoder
 
 [<Tests>]
 let tests =
