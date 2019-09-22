@@ -59,9 +59,10 @@ module NumericFunctions =
             let table = Array2D.zeroCreate nMax kMax
             for n in 0..nMax do
                 for k in 0..kMax do
-                    if n < k then table.[n, k] <- -1
-                    else if k = 0 then table.[n, k] <- 1
-                    else
+                    match n, k with
+                    | n, k when n < k -> table.[n, k] <- -1
+                    | _, k when k = 0 -> table.[n, k] <- 1
+                    | _ ->
                         table.[n, k] <- int64 table.[n - 1, k - 1]
                                         + int64 table.[n - 1, k]
                                           % int64 this.divisor |> int32
