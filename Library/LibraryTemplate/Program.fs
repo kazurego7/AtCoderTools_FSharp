@@ -1,7 +1,7 @@
 ﻿module AtCoder
 
-open System
 open Microsoft.FSharp.Collections
+open System
 
 module InputOutputs =
     let read() = Console.ReadLine()
@@ -13,26 +13,46 @@ module InputOutputs =
         while not (Seq.isEmpty line) do
             lines <- line :: lines
         lines
-        |> List.rev
-        |> List.toSeq
+        |> Seq.rev
         |> array2D
 
-    let inline printRow list =
-        let strs = list |> List.map string
-        if List.isEmpty strs then
-            printf "%s" strs.[0]
-            for s in List.skip 1 strs do
+    let inline printRow line =
+        let strs = line |> Seq.map string
+        if Seq.isEmpty strs then
+            printf "%s" (Seq.head strs)
+            for s in Seq.skip 1 strs do
                 printf " %s" s
         printf "\n"
 
 module NumericFunctions =
-    type Mod =
+    type Mods =
         { divisor : int32 }
+        member this.Mod(a : int64) =
+            let b = a % int64 this.divisor |> int32
+            if b < 0 then b + this.divisor else b
 
-        member this.Pow (b : int64) (n : int32) : int32 =
-            List.replicate n b
-            |> List.fold (fun product i -> product * i % int64 this.divisor) 1L
-            |> int32
+        member this.Mod(a : int32) =
+            this.Mod(int64 a)
+
+        member this.Add (a : int32) (b : int32) : int32 =
+            (this.Mod a + this.Mod b) % this.divisor
+
+        member this.Sub (a : int32) (b : int32) : int32 =
+            let sub = (this.Mod a - this.Mod b) % this.divisor
+            if sub < 0 then sub + this.divisor else sub
+
+        member this.Mul (a : int32) (b : int32) : int32 =
+            (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
+
+        member this.Pow (b : int32) (n : int32) : int32 =
+            Seq.replicate n b
+            |> Seq.fold this.Mul 1
+
+        member this.Inv(a : int32) : int32 =
+            this.Pow a (this.divisor - 2)
+
+        member this.Div (a : int32) (b : int32) : int32 =
+            this.Mul a (this.Inv b)
 
         member this.Perm (n : int32) (k : int32) : int32 =
             match (n, k) with
@@ -40,11 +60,8 @@ module NumericFunctions =
             | (_, k) when k < 0 -> invalidArg "k" "k >= 0"
             | (n, k) when k > n -> 0
             | _ ->
-                [ n - k + 1..n ]
-                |> List.fold
-                       (fun product m -> product * int64 m % int64 this.divisor)
-                       1L
-                |> int32
+                seq { n - k + 1..n }
+                |> Seq.fold this.Mul 1
 
         member this.Fact(n : int32) : int32 = this.Perm n n
 
