@@ -32,10 +32,7 @@ let tests =
             testEqual (mods.Pow 0 41) 0 "n = 0"
             testEqual (mods.Pow 151 0) 1 "b = 0"
             testEqual (mods.Pow 1 1000) 1 "StackOverFlowかもしれない"
-            ]
-        // testList "Mods.Inv" [
-        //     testEqual (mods.Inv 100000)
-        // ]
+        ]
         ptestList "Mods.Div" [
             testEqual (mods.Div 678813585 100000) 123456789 "div"
         ]
@@ -47,5 +44,10 @@ let tests =
             testEqual (mods.Perm 0 516) 0 "n = 0"
             testEqual (mods.Perm 5 0) 1 "k = 0"
             testEqual (mods.Perm 4 23) 0 "n < k"
-            ]
+        ]
+        testList "Mods.FactTable" [
+            testError (fun () -> (mods.FactTable 3).[4]) "make too match array"
+            testEqual (mods.FactTable 10).[10] 3628800 "10!"
+        ]
+
     ]

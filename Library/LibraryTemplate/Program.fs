@@ -71,14 +71,10 @@ module NumericFunctions =
                 seq { n - k + 1..n }
                 |> Seq.fold this.Mul 1
 
-        member this.Fact(n : int32) : int32 = this.Perm n n
-
         member this.FactTable(nMax : int32) =
-            [ 1..nMax ]
-            |> List.scan
-                   (fun product i -> product * int64 i % int64 this.divisor) 1L
-            |> List.map int32
-            |> List.toArray
+            seq { 2..nMax }
+            |> Seq.scan this.Mul 1
+            |> Seq.toArray
 
         member this.CombTable (nMax : int32) (kMax : int32) =
             let table = Array2D.zeroCreate nMax kMax
