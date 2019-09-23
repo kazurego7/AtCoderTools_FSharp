@@ -45,9 +45,17 @@ module NumericFunctions =
             (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
 
         member this.Pow (b : int32) (n : int32) : int32 =
-            Seq.replicate n b
-            |> Seq.fold this.Mul 1
-
+            let digit = int32 (Math.Log(double n, 2.0))
+            let seqs = seq { 0..digit }
+                        |> Seq.scan (fun acm _ -> this.Mul acm acm) b
+                        |> Seq.toArray
+            seq { 0..digit }
+                |> Seq.fold (fun acm i ->
+                    if ((n >>> i) &&& 1) = 1 then
+                        this.Mul acm seqs.[i]
+                    else
+                        acm
+                    ) 1
         member this.Inv(a : int32) : int32 =
             this.Pow a (this.divisor - 2)
 
