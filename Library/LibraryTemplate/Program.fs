@@ -147,6 +147,20 @@ module NumericFunctions =
     let lcm (m : int64) (n : int64) : int64 =
         ((bigint m) * (bigint n) / bigint (gcd m n)) |> Checked.int64
 
+    let divisors (m : int64) : seq<int64> =
+        match m with
+        | m when m <= 0L -> invalidArg "m" "m <= 0"
+        | _ -> let sqrtM = int (sqrt (double m))
+               let overRootM =
+                    Seq.interval 1 (sqrtM + 1)
+                        |> Seq.map int64
+                        |> Seq.filter (fun d -> m % d = 0L)
+                        |> Seq.rev
+               overRootM
+                    |> if int64 sqrtM * int64 sqrtM = m then Seq.tail else id
+                    |> Seq.map (fun x -> m / x)
+                    |> Seq.append overRootM
+
 open InputOutputs
 open NumericFunctions
 
