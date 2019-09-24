@@ -130,16 +130,21 @@ module NumericFunctions =
                                           % int64 this.divisor |> int32
             table
 
-    module Int64 =
-        let isEven (a : int64) : bool =
-            a % 2L = 0L
-        let isOdd (a : int64) : bool =
-            not (isEven a)
-    module Int32 =
-        let isEven (a : int32) : bool =
-            Int64.isEven (int64 a)
-        let isOdd (a : int32) : bool =
-            Int64.isOdd (int64 a)
+    let isEven (a : int64) : bool =
+        a % 2L = 0L
+
+    let isOdd (a : int64) : bool =
+        not (isEven a)
+
+    let rec gcd (m : int64) (n : int64) : int64 =
+        match (m, n) with
+        | (m, _) when m <= 0L -> invalidArg "m" "m <= 0"
+        | (_, n) when n <= 0L -> invalidArg "n" "n <= 0"
+        | (m, n) when m < n -> gcd n m
+        | (m, n) when m % n = 0L -> n
+        | _ -> gcd n (m % n)
+
+
 
 open InputOutputs
 open NumericFunctions
