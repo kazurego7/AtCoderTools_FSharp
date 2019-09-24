@@ -161,6 +161,12 @@ module NumericFunctions =
                     |> Seq.map (fun x -> m / x)
                     |> Seq.append overRootM
 
+    let rec commonDivisor (m : int64) (n : int64) : seq<int64> =
+        match (m, n) with
+        | (_, n) when n <= 0L -> invalidArg "n" "n <= 0"
+        | (m, n) when m < n -> commonDivisor n m
+        | _ -> divisors m |> Seq.filter (fun md -> n % md = 0L)
+
 open InputOutputs
 open NumericFunctions
 

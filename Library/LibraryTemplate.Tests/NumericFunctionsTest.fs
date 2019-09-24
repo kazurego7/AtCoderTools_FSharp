@@ -66,7 +66,13 @@ let tests =
         testList "divisors" [
             testError (fun () -> divisors 0L) "m <= 0"
             testSeqEq (divisors 6L) [ 1L; 2L; 3L; 6L ] "positive integer"
-            testSeqEq (divisors (16L)) [ 1L; 2L; 4L; 8L;16L;] "square number"
+            testSeqEq (divisors (16L)) [ 1L; 2L; 4L; 8L; 16L; ] "square number"
             testSeqEq (divisors 1L) [ 1L ] "lower limit"
+        ]
+
+        testList "commonDivisor" [
+            testError (fun () -> commonDivisor 0L 51L) "n <= 0"
+            testError (fun () -> commonDivisor 31L 0L) "m <= 0"
+            testSeqEq (commonDivisor 13L 17L) [ 1L ] "n < m && coprime"
         ]
     ]
