@@ -49,5 +49,8 @@ let tests =
             testError (fun () -> (mods.FactTable 3).[4]) "make too match array"
             testEqual (mods.FactTable 10).[10] 3628800 "10!"
         ]
-
+        testList "CombTable" [
+            testError (fun () -> (mods.CombTable 3).[3, 4]) "make too match array"
+            testEqual (mods.CombTable 10).[10, 3] 120 "10 C 3"
+        ]
     ]

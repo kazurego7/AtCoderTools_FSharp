@@ -71,17 +71,17 @@ module NumericFunctions =
                 seq { n - k + 1..n }
                 |> Seq.fold this.Mul 1
 
-        member this.FactTable(nMax : int32) =
+        member this.FactTable(nMax : int32) : int32 [] =
             seq { 2..nMax }
             |> Seq.scan this.Mul 1
             |> Seq.toArray
 
-        member this.CombTable (nMax : int32) (kMax : int32) =
-            let table = Array2D.zeroCreate nMax kMax
+        member this.CombTable(nMax : int32) : int32 [,] =
+            let table = Array2D.zeroCreate (nMax + 1) (nMax + 1)
             for n in 0..nMax do
-                for k in 0..kMax do
+                for k in 0..nMax do
                     match (n, k) with
-                    | (n, k) when n < k -> table.[n, k] <- -1
+                    | (n, k) when n < k -> table.[n, k] <- 0
                     | (_, k) when k = 0 -> table.[n, k] <- 1
                     | _ ->
                         table.[n, k] <- int64 table.[n - 1, k - 1]
