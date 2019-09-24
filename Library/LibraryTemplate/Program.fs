@@ -144,6 +144,8 @@ module NumericFunctions =
         | (m, n) when m % n = 0L -> n
         | _ -> gcd n (m % n)
 
+    // let lcm (m:int64) (n:int64) : int64 =
+
 
 
 open InputOutputs

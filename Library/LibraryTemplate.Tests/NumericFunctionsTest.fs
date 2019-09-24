@@ -49,4 +49,10 @@ let tests =
             testError (fun () -> (mods.CombTable 3).[3, 4]) "make too match array"
             testEqual (mods.CombTable 10).[10, 3] 120 "10 C 3"
         ]
+
+        testList "gcd" [
+            testError (fun () -> (gcd 0L 51L)) "m <= 0"
+            testError (fun () -> (gcd 37L 0L)) "n <= 0"
+            testEqual (gcd 17L 57L) 1L "m < n"
+        ]
     ]
