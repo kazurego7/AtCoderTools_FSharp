@@ -144,9 +144,8 @@ module NumericFunctions =
         | (m, n) when m % n = 0L -> n
         | _ -> gcd n (m % n)
 
-    // let lcm (m:int64) (n:int64) : int64 =
-
-
+    let lcm (m : int64) (n : int64) : int64 =
+        ((bigint m) * (bigint n) / bigint (gcd m n)) |> Checked.int64
 
 open InputOutputs
 open NumericFunctions
