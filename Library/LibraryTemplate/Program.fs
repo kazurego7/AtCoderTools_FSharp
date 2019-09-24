@@ -72,7 +72,7 @@ module NumericFunctions =
                 |> Seq.fold this.Mul 1
 
         member this.FactTable(nMax : int32) : int32 [] =
-            seq { 2..nMax }
+            seq { 1..nMax }
             |> Seq.scan this.Mul 1
             |> Seq.toArray
 
@@ -89,9 +89,9 @@ module NumericFunctions =
                                           % int64 this.divisor |> int32
             table
 
-    module List =
+    module Seq =
         let interval startInclusive endExclusive =
-            seq { startInclusive..(endExclusive - 1) } |> Seq.toList
+            seq { startInclusive..(endExclusive - 1) }
 
 open InputOutputs
 open NumericFunctions

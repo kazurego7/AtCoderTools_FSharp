@@ -33,7 +33,7 @@ let tests =
             testEqual (mods.Pow 151 0) 1 "b = 0"
             testEqual (mods.Pow 1 1000) 1 "StackOverFlowかもしれない"
         ]
-        ptestList "Mods.Div" [
+        testList "Mods.Div" [
             testEqual (mods.Div 678813585 100000) 123456789 "div"
         ]
         testList "Mods.Perm" [
