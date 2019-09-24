@@ -3,14 +3,19 @@
 open Microsoft.FSharp.Collections
 open System
 
+
+module Seq =
+    let interval startInclusive endExclusive =
+        seq { startInclusive..(endExclusive - 1) }
+
 module InputOutputs =
-    let read() =
+    let read() : string =
         Console.ReadLine()
 
-    let reads() =
+    let reads() : string [] =
         read().Split()
 
-    let readMatrix() =
+    let readMatrix() : string [,] =
         let mutable lines = []
         let line = reads() |> Array.toSeq
         while not (Seq.isEmpty line) do
@@ -19,10 +24,10 @@ module InputOutputs =
         |> Seq.rev
         |> array2D
 
-    let readInt32() =
+    let readInt32() : int32 =
         read() |> int32
 
-    let readInt64() =
+    let readInt64() : int64 =
         read() |> int64
 
     let inline int32s (source : seq<'a>) : seq<int32> =
@@ -31,19 +36,34 @@ module InputOutputs =
     let inline int64s (source : seq<'a>) : seq<int64> =
         Seq.map int64 source
 
-    let readInt32s() =
+    let readInt32s() : seq<int32> =
         reads() |> int32s
 
-    let readInt64s() =
+    let readInt64s() : seq<int64> =
         reads() |> int64s
 
-    let inline printRow line =
+    let inline print (item : 'a) : unit =
+        printfn "%A" item
+
+    let inline printRow (line : seq<'a>) : unit =
         let strs = line |> Seq.map string
         if Seq.isEmpty strs then
             printf "%s" (Seq.head strs)
             for s in Seq.skip 1 strs do
                 printf " %s" s
         printf "\n"
+
+    let inline printColumn (line : seq<'a>) : unit =
+        for item in line do
+            printf "%A" item
+
+    let inline printGridGraph (lines : 'a [,]) : unit =
+        for i in (Seq.interval 0 lines.Length) do
+            lines.[i, *]
+                |> Seq.map string
+                |> String.concat " "
+                |> print
+
 
 module NumericFunctions =
     type Mods =
@@ -110,11 +130,16 @@ module NumericFunctions =
                                           % int64 this.divisor |> int32
             table
 
-
-
-module Seq =
-    let interval startInclusive endExclusive =
-        seq { startInclusive..(endExclusive - 1) }
+    module Int64 =
+        let isEven (a : int64) : bool =
+            a % 2L = 0L
+        let isOdd (a : int64) : bool =
+            not (isEven a)
+    module Int32 =
+        let isEven (a : int32) : bool =
+            Int64.isEven (int64 a)
+        let isOdd (a : int32) : bool =
+            Int64.isOdd (int64 a)
 
 open InputOutputs
 open NumericFunctions
