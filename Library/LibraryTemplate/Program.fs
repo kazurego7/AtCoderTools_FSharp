@@ -4,8 +4,11 @@ open Microsoft.FSharp.Collections
 open System
 
 module InputOutputs =
-    let read() = Console.ReadLine()
-    let reads() = read().Split()
+    let read() =
+        Console.ReadLine()
+
+    let reads() =
+        read().Split()
 
     let readMatrix() =
         let mutable lines = []
@@ -15,6 +18,24 @@ module InputOutputs =
         lines
         |> Seq.rev
         |> array2D
+
+    let readInt32() =
+        read() |> int32
+
+    let readInt64() =
+        read() |> int64
+
+    let inline int32s (source : seq<'a>) : seq<int32> =
+        Seq.map int32 source
+
+    let inline int64s (source : seq<'a>) : seq<int64> =
+        Seq.map int64 source
+
+    let readInt32s() =
+        reads() |> int32s
+
+    let readInt64s() =
+        reads() |> int64s
 
     let inline printRow line =
         let strs = line |> Seq.map string
@@ -89,9 +110,11 @@ module NumericFunctions =
                                           % int64 this.divisor |> int32
             table
 
-    module Seq =
-        let interval startInclusive endExclusive =
-            seq { startInclusive..(endExclusive - 1) }
+
+
+module Seq =
+    let interval startInclusive endExclusive =
+        seq { startInclusive..(endExclusive - 1) }
 
 open InputOutputs
 open NumericFunctions
