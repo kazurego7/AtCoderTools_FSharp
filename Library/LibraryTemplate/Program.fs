@@ -165,6 +165,25 @@ module Algorithm =
             binarySearch source predicate -1 source.Length
                 |> fun ix -> if ix >= source.Length then None else Some ix
 
+    // let twoPointers
+    //         (n : int32)
+    //         (predicate : int32 -> int32 -> bool)
+    //         (initialCondition : 'a)
+    //         (rightUpdate : int32 -> int32 -> 'a -> 'a)
+    //         (leftUpdate : int32 -> int32 -> 'a -> 'a) =
+    //     let mutable l = 0
+    //     let mutable r = 0
+    //     let mutable condition = initialCondition
+    //     while r < n do
+    //         while r < n && not (predicate l r) do
+    //             condition <- rightUpdate l r condition
+    //             r <- r + 1
+    //         while r < n && l <> r && predicate l r do
+    //             condition <- leftUpdate l r condition
+    //             l <- l + 1
+    //     condition
+
+
 open InputOutputs
 open NumericFunctions
 

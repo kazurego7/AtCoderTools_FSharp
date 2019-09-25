@@ -19,4 +19,11 @@ let tests =
         testList "rightBinarySearch" [
             testEqual (rightBinarySearch [| 5..10 |] (fun x -> x > 10)) None "right over"
         ]
-    ]
+        ]// testList "twoPointers" [
+        //     let arr1 = [| 5; 1; 2; 5; 10; 7; 4; 9; 2; 8 |]
+        //     let sumLR = fun l r -> Array.take r arr1 |> Array.skip l |> Array.sum
+        //     testEqual (twoPointers 10 (fun l r -> sumLR l r >= 12) 0 (fun l r cond -> cond + 1) (fun l r cond -> cond)) 11 "counting"
+        //     testEqual (twoPointers 10 (fun l r -> sumLR l r >= 28) 600 (fun l r cond -> cond) (fun l r cond -> min (r - l) cond)) 11 "min interval"
+        // ]
+
+
