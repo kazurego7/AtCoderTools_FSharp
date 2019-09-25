@@ -71,7 +71,7 @@ module NumericFunctions =
 
         /// 二分累積 O(Log N)
         member this.Pow (b : int32) (n : int32) : int32 =
-            let digit = int32 (Math.Log(double n, 2.0))
+            let digit = int32 (Math.Log(float n, 2.0))
 
             let seqs =
                 seq { 0..digit }
@@ -130,7 +130,7 @@ module NumericFunctions =
         match m with
         | m when m <= 0L -> invalidArg "m" "m <= 0"
         | _ ->
-            let sqrtM = int (sqrt (double m))
+            let sqrtM = int (sqrt (float m))
 
             let overRootM =
                 Seq.interval 1 (sqrtM + 1)
@@ -156,7 +156,7 @@ module NumericFunctions =
         | n when n <= 1 -> invalidArg "n" "n <= 1"
         | _ ->
             let mutable ps = Seq.interval 2 (n + 1)
-            while not (Seq.isEmpty ps) && Seq.head ps <= int32 (sqrt (double n)) do
+            while not (Seq.isEmpty ps) && Seq.head ps <= int32 (sqrt (float n)) do
                 let m = Seq.head ps
                 ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
             ps
@@ -215,24 +215,26 @@ module Algorithm =
             Seq.append (Seq.append (seq { yield 0 }) cutIxs) (seq { yield n })
                 |> Seq.mapAdjacent (fun i0 i1 -> (string source.[i0], i1 - i0))
 
+    let rec ternarySearchDownward (left : float) (right : float) (convexFunction : float -> float) (allowableError : float) =
+        match left, right, convexFunction, allowableError with
+        | l, r, f, e when r - l < e -> l
+        | l, r, f, e ->
+            let ml = l + (r - l) / 3.0
+            let mr = l + (r - l) / 3.0 * 2.0
+            if f ml < f mr then ternarySearchDownward l mr f e
+            else if f ml > f mr then ternarySearchDownward ml r f e
+            else ternarySearchDownward ml mr f e
 
-// let twoPointers
-//         (n : int32)
-//         (predicate : int32 -> int32 -> bool)
-//         (initialCondition : 'a)
-//         (rightUpdate : int32 -> int32 -> 'a -> 'a)
-//         (leftUpdate : int32 -> int32 -> 'a -> 'a) =
-//     let mutable l = 0
-//     let mutable r = 0
-//     let mutable condition = initialCondition
-//     while r < n do
-//         while r < n && not (predicate l r) do
-//             condition <- rightUpdate l r condition
-//             r <- r + 1
-//         while r < n && l <> r && predicate l r do
-//             condition <- leftUpdate l r condition
-//             l <- l + 1
-//     condition
+    let rec ternarySearchUpward (left : float) (right : float) (convexFunction : float -> float) (allowableError : float) =
+        match left, right, convexFunction, allowableError with
+        | l, r, f, e when r - l < e -> l
+        | l, r, f, e ->
+            let ml = l + (r - l) / 3.0
+            let mr = l + (r - l) / 3.0 * 2.0
+            if f ml < f mr then ternarySearchUpward ml r f e
+            else if f ml > f mr then ternarySearchUpward l mr f e
+            else ternarySearchUpward ml mr f e
+
 open InputOutputs
 open NumericFunctions
 

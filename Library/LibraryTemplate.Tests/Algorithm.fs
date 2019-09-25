@@ -9,19 +9,25 @@ open TestTools
 let tests =
     testList "Algorithm" [
         testList "binarySearch" [
-            testEqual (binarySearch [||] (fun _ -> true) -1 0) 0 "empty"
-            testEqual (binarySearch [| 5..10 |] (fun x -> x > 10) -1 [| 5..10 |].Length) [| 5..10 |].Length "right over"
-            testEqual (binarySearch [| 5..10 |] (fun x -> x < 5) [| 5..10 |].Length -1) -1 "left over"
+            testValueEqual (binarySearch [||] (fun _ -> true) -1 0) 0 "empty"
+            testValueEqual (binarySearch [| 5..10 |] (fun x -> x > 10) -1 [| 5..10 |].Length) [| 5..10 |].Length "right over"
+            testValueEqual (binarySearch [| 5..10 |] (fun x -> x < 5) [| 5..10 |].Length -1) -1 "left over"
         ]
         testList "leftBinarySearch" [
-            testEqual (leftBinarySearch [| 5..10 |] (fun x -> x < 5)) None "left over"
+            testValueEqual (leftBinarySearch [| 5..10 |] (fun x -> x < 5)) None "left over"
         ]
         testList "rightBinarySearch" [
-            testEqual (rightBinarySearch [| 5..10 |] (fun x -> x > 10)) None "right over"
+            testValueEqual (rightBinarySearch [| 5..10 |] (fun x -> x > 10)) None "right over"
         ]
         testList "runLengthEncoding" [
-            testSeqEq (runLengthEncoding "") [] "empty"
-            testSeqEq (runLengthEncoding "aabbbbc") [ ("a", 2); ("b", 4); ("c", 1) ] "aabbbbc"
+            testSeqEqual (runLengthEncoding "") [] "empty"
+            testSeqEqual (runLengthEncoding "aabbbbc") [ ("a", 2); ("b", 4); ("c", 1) ] "aabbbbc"
+        ]
+        testList "ternarySearchDownward" [
+            testApproximation (ternarySearchDownward 0.0 20.0 (fun x -> (x - 13.0) * (x - 13.0)) 0.000000001) 13.0 Accuracy.medium "x = 13"
+        ]
+        testList "ternarySearchUpward" [
+            testApproximation (ternarySearchUpward 0.0 20.0 (fun x -> -(x - 13.0) * (x - 13.0)) 0.000000001) 13.0 Accuracy.medium "x = 13"
         ]
     ]
 // testList "twoPointers" [
