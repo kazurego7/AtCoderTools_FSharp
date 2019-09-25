@@ -70,5 +70,9 @@ let tests =
                 testSeqEq (commonDivisor 13L 17L) [ 1L ] "n < m && coprime" ]
 
           testList "primes"
-              [ testError (fun () -> primes 0) "n <= 1"
-                testSeqEq (primes 13) [ 2; 3; 5; 7; 11; 13 ] "not inclusive n" ] ]
+              [ testError (fun () -> primes 1) "n <= 1"
+                testSeqEq (primes 13) [ 2; 3; 5; 7; 11; 13 ] "not inclusive n" ]
+
+          testList "primeFactrization"
+              [ testError (fun () -> primeFactrization 1) "n <= 1"
+                testSeqEq (primeFactrization 3) [ 0; 0; 0; 1 ] "prime" ] ]

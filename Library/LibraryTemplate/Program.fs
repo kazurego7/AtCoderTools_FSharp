@@ -152,7 +152,7 @@ module NumericFunctions =
         | (m, n) when m < n -> commonDivisor n m
         | _ -> divisors m |> Seq.filter (fun md -> n % md = 0L)
 
-    /// エラトステネスの篩 O(Log Log N)
+    /// エラトステネスの篩 O(N loglog N)
     let primes (n : int32) : seq<int32> =
         match n with
         | n when n <= 1 -> invalidArg "n" "n <= 1"
@@ -162,6 +162,24 @@ module NumericFunctions =
                 let m = Seq.head ps
                 ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
             ps
+
+    /// 素因数分解 O(N loglog N)
+    /// インデックスの数 -> 指数　の対応を持つ配列を返す
+    let primeFactrization (n : int32) : int32 [] =
+        match n with
+        | n when n <= 1 -> invalidArg "n" "n <= 1"
+        | _ ->
+            let ps = primes n |> Seq.toArray
+
+            let rec helper (quotient : int32) (i : int32) (primeCounts : int32 []) : int32 [] =
+                match quotient with
+                | quotient when quotient = 1 -> primeCounts
+                | quotient when quotient % ps.[i] <> 0 ->
+                    helper quotient (i + 1) primeCounts
+                | _ ->
+                    primeCounts.[ps.[i]] <- primeCounts.[ps.[i]] + 1
+                    helper (quotient / ps.[i]) (i + 1) primeCounts
+            helper n 0 (Array.zeroCreate (n + 1))
 
 module Algorithm =
     let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32)

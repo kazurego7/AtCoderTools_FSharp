@@ -5,6 +5,9 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibraryTemplate\LibraryTemplate.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="TestTools.fs" />
     <Compile Include="NumericFunctionsTest.fs" />
     <Compile Include="Algorithm.fs" />
@@ -15,8 +18,5 @@
     <PackageReference Include="FSharp.Core" Version="4.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.*" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LibraryTemplate\LibraryTemplate.fsproj" />
   </ItemGroup>
 </Project>
