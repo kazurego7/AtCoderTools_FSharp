@@ -37,7 +37,7 @@ module InputOutputs =
 
     let inline printColumn (line : seq<'a>) : unit =
         for item in line do
-            printf "%A" item
+            print item
 
     let inline printGridGraph (lines : 'a [,]) : unit =
         for i in (Seq.interval 0 lines.Length) do
@@ -56,7 +56,8 @@ module NumericFunctions =
             else b
 
         member this.Mod(a : int32) = this.Mod(int64 a)
-        member this.Add (a : int32) (b : int32) : int32 = (this.Mod a + this.Mod b) % this.divisor
+        member this.Add (a : int32) (b : int32) : int32 =
+            (this.Mod a + this.Mod b) % this.divisor
 
         member this.Sub (a : int32) (b : int32) : int32 =
             let sub = (this.Mod a - this.Mod b) % this.divisor
@@ -102,7 +103,8 @@ module NumericFunctions =
                     | (_, k) when k = 0 -> table.[n, k] <- 1
                     | _ ->
                         table.[n, k] <- int64 table.[n - 1, k - 1]
-                                        + int64 table.[n - 1, k] % int64 this.divisor |> int32
+                                        + int64 table.[n - 1, k] % int64 this.divisor
+                                        |> int32
             table
 
     let isEven (a : int64) : bool = a % 2L = 0L
@@ -142,8 +144,21 @@ module NumericFunctions =
         | (m, n) when m < n -> commonDivisor n m
         | _ -> divisors m |> Seq.filter (fun md -> n % md = 0L)
 
+    let primes (n : int32) : seq<int32> =
+        match n with
+        | n when n <= 1 -> invalidArg "n" "n <= 1"
+        | _ ->
+            let mutable ps = Seq.interval 2 (n + 1)
+            while not (Seq.isEmpty ps) && Seq.head ps <= int32 (sqrt (double n)) do
+                let m = Seq.head ps
+                ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
+            ps
+    
+    let 
+
 module Algorithm =
-    let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32) (ok : int32) : int32 =
+    let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32)
+            (ok : int32) : int32 =
         match (ok, ng) with
         | (ok, ng) when abs (ok - ng) = 1 -> ok
         | _ ->
@@ -156,34 +171,36 @@ module Algorithm =
         | len when len = Int32.MaxValue -> invalidArg "source" "It is equal Int32."
         | _ ->
             binarySearch source predicate source.Length -1
-                |> fun ix -> if ix < 0 then None else Some ix
+            |> fun ix ->
+                if ix < 0 then None
+                else Some ix
 
     let rightBinarySearch (source : 'a []) (predicate : 'a -> bool) =
         match source.Length with
         | len when len = Int32.MaxValue -> invalidArg "source" "It is equal Int32."
         | _ ->
             binarySearch source predicate -1 source.Length
-                |> fun ix -> if ix >= source.Length then None else Some ix
+            |> fun ix ->
+                if ix >= source.Length then None
+                else Some ix
 
-    // let twoPointers
-    //         (n : int32)
-    //         (predicate : int32 -> int32 -> bool)
-    //         (initialCondition : 'a)
-    //         (rightUpdate : int32 -> int32 -> 'a -> 'a)
-    //         (leftUpdate : int32 -> int32 -> 'a -> 'a) =
-    //     let mutable l = 0
-    //     let mutable r = 0
-    //     let mutable condition = initialCondition
-    //     while r < n do
-    //         while r < n && not (predicate l r) do
-    //             condition <- rightUpdate l r condition
-    //             r <- r + 1
-    //         while r < n && l <> r && predicate l r do
-    //             condition <- leftUpdate l r condition
-    //             l <- l + 1
-    //     condition
-
-
+// let twoPointers
+//         (n : int32)
+//         (predicate : int32 -> int32 -> bool)
+//         (initialCondition : 'a)
+//         (rightUpdate : int32 -> int32 -> 'a -> 'a)
+//         (leftUpdate : int32 -> int32 -> 'a -> 'a) =
+//     let mutable l = 0
+//     let mutable r = 0
+//     let mutable condition = initialCondition
+//     while r < n do
+//         while r < n && not (predicate l r) do
+//             condition <- rightUpdate l r condition
+//             r <- r + 1
+//         while r < n && l <> r && predicate l r do
+//             condition <- leftUpdate l r condition
+//             l <- l + 1
+//     condition
 open InputOutputs
 open NumericFunctions
 
