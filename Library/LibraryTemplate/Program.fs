@@ -153,8 +153,6 @@ module NumericFunctions =
                 let m = Seq.head ps
                 ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
             ps
-    
-    let 
 
 module Algorithm =
     let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32)
