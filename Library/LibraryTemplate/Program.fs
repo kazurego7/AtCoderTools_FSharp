@@ -5,6 +5,10 @@ open System
 
 module Seq =
     let interval startInclusive endExclusive = seq { startInclusive..(endExclusive - 1) }
+    let inline mapAdjacent (op : 'a -> 'a -> 'b) (source : seq<'a>) : seq<'b> =
+        match source with
+        | source when Seq.isEmpty source -> Seq.empty
+        | _ -> Seq.map2 op source (Seq.tail source)
 
 module InputOutputs =
     let read() : string = Console.ReadLine()
@@ -56,16 +60,14 @@ module NumericFunctions =
             else b
 
         member this.Mod(a : int32) = this.Mod(int64 a)
-        member this.Add (a : int32) (b : int32) : int32 =
-            (this.Mod a + this.Mod b) % this.divisor
+        member this.Add (a : int32) (b : int32) : int32 = (this.Mod a + this.Mod b) % this.divisor
 
         member this.Sub (a : int32) (b : int32) : int32 =
             let sub = (this.Mod a - this.Mod b) % this.divisor
             if sub < 0 then sub + this.divisor
             else sub
 
-        member this.Mul (a : int32) (b : int32) : int32 =
-            (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
+        member this.Mul (a : int32) (b : int32) : int32 = (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
 
         /// 二分累積 O(Log N)
         member this.Pow (b : int32) (n : int32) : int32 =
@@ -105,10 +107,7 @@ module NumericFunctions =
                     match (n, k) with
                     | (n, k) when n < k -> table.[n, k] <- 0
                     | (_, k) when k = 0 -> table.[n, k] <- 1
-                    | _ ->
-                        table.[n, k] <- int64 table.[n - 1, k - 1]
-                                        + int64 table.[n - 1, k] % int64 this.divisor
-                                        |> int32
+                    | _ -> table.[n, k] <- int64 table.[n - 1, k - 1] + int64 table.[n - 1, k] % int64 this.divisor |> int32
             table
 
     let isEven (a : int64) : bool = a % 2L = 0L
@@ -124,8 +123,7 @@ module NumericFunctions =
         | _ -> gcd n (m % n)
 
     /// gcdを使っているため O(Log N)
-    let lcm (m : int64) (n : int64) : int64 =
-        ((bigint m) * (bigint n) / bigint (gcd m n)) |> Checked.int64
+    let lcm (m : int64) (n : int64) : int64 = (bigint m) * (bigint n) / bigint (gcd m n) |> Checked.int64
 
     /// O(√N)
     let divisors (m : int64) : seq<int64> =
@@ -174,16 +172,14 @@ module NumericFunctions =
             let rec helper (quotient : int32) (i : int32) (primeCounts : int32 []) : int32 [] =
                 match quotient with
                 | quotient when quotient = 1 -> primeCounts
-                | quotient when quotient % ps.[i] <> 0 ->
-                    helper quotient (i + 1) primeCounts
+                | quotient when quotient % ps.[i] <> 0 -> helper quotient (i + 1) primeCounts
                 | _ ->
                     primeCounts.[ps.[i]] <- primeCounts.[ps.[i]] + 1
                     helper (quotient / ps.[i]) (i + 1) primeCounts
             helper n 0 (Array.zeroCreate (n + 1))
 
 module Algorithm =
-    let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32)
-            (ok : int32) : int32 =
+    let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32) (ok : int32) : int32 =
         match (ok, ng) with
         | (ok, ng) when abs (ok - ng) = 1 -> ok
         | _ ->
@@ -208,6 +204,17 @@ module Algorithm =
             |> fun ix ->
                 if ix >= source.Length then None
                 else Some ix
+
+    let runLengthEncoding (source : string) : seq<string * int32> =
+        match source.Length with
+        | n when n = 0 -> Seq.empty
+        | n ->
+            let cutIxs =
+                Seq.interval 1 n
+                    |> Seq.filter (fun i -> source.[i] <> source.[i - 1])
+            Seq.append (Seq.append (seq { yield 0 }) cutIxs) (seq { yield n })
+                |> Seq.mapAdjacent (fun i0 i1 -> (string source.[i0], i1 - i0))
+
 
 // let twoPointers
 //         (n : int32)
