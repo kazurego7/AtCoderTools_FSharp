@@ -67,6 +67,7 @@ module NumericFunctions =
         member this.Mul (a : int32) (b : int32) : int32 =
             (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
 
+        /// 二分累積 O(Log N)
         member this.Pow (b : int32) (n : int32) : int32 =
             let digit = int32 (Math.Log(double n, 2.0))
 
@@ -79,7 +80,9 @@ module NumericFunctions =
                    if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i]
                    else acm) 1
 
+        /// フェルマーの小定理より
         member this.Inv(a : int32) : int32 = this.Pow a (this.divisor - 2)
+
         member this.Div (a : int32) (b : int32) : int32 = this.Mul a (this.Inv b)
 
         member this.Perm (n : int32) (k : int32) : int32 =
@@ -94,6 +97,7 @@ module NumericFunctions =
             |> Seq.scan this.Mul 1
             |> Seq.toArray
 
+        /// パスカルの三角形 O(N^2)
         member this.CombTable(nMax : int32) : int32 [,] =
             let table = Array2D.zeroCreate (nMax + 1) (nMax + 1)
             for n in 0..nMax do
@@ -110,6 +114,7 @@ module NumericFunctions =
     let isEven (a : int64) : bool = a % 2L = 0L
     let isOdd (a : int64) : bool = not (isEven a)
 
+    /// ユークリッドの互除法 O(Log N)
     let rec gcd (m : int64) (n : int64) : int64 =
         match (m, n) with
         | (m, _) when m <= 0L -> invalidArg "m" "m <= 0"
@@ -118,9 +123,11 @@ module NumericFunctions =
         | (m, n) when m % n = 0L -> n
         | _ -> gcd n (m % n)
 
+    /// gcdを使っているため O(Log N)
     let lcm (m : int64) (n : int64) : int64 =
         ((bigint m) * (bigint n) / bigint (gcd m n)) |> Checked.int64
 
+    /// O(√N)
     let divisors (m : int64) : seq<int64> =
         match m with
         | m when m <= 0L -> invalidArg "m" "m <= 0"
@@ -138,12 +145,14 @@ module NumericFunctions =
             |> Seq.map (fun x -> m / x)
             |> Seq.append overRootM
 
+    /// O(√N)
     let rec commonDivisor (m : int64) (n : int64) : seq<int64> =
         match (m, n) with
         | (_, n) when n <= 0L -> invalidArg "n" "n <= 0"
         | (m, n) when m < n -> commonDivisor n m
         | _ -> divisors m |> Seq.filter (fun md -> n % md = 0L)
 
+    /// エラトステネスの篩 O(Log Log N)
     let primes (n : int32) : seq<int32> =
         match n with
         | n when n <= 1 -> invalidArg "n" "n <= 1"
