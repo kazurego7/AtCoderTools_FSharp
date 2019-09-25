@@ -20,8 +20,8 @@ let tests =
             testValueEqual (rightBinarySearch [| 5..10 |] (fun x -> x > 10)) None "right over"
         ]
         testList "runLengthEncoding" [
-            testSeqEqual (runLengthEncoding "") [] "empty"
-            testSeqEqual (runLengthEncoding "aabbbbc") [ ("a", 2); ("b", 4); ("c", 1) ] "aabbbbc"
+            testOrderedSeqEqual (runLengthEncoding "") [] "empty"
+            testOrderedSeqEqual (runLengthEncoding "aabbbbc") [ ("a", 2); ("b", 4); ("c", 1) ] "aabbbbc"
         ]
         testList "ternarySearchDownward" [
             testApproximation (ternarySearchDownward 0.0 20.0 (fun x -> (x - 13.0) * (x - 13.0)) 0.000000001) 13.0 Accuracy.medium "x = 13"
@@ -30,9 +30,3 @@ let tests =
             testApproximation (ternarySearchUpward 0.0 20.0 (fun x -> -(x - 13.0) * (x - 13.0)) 0.000000001) 13.0 Accuracy.medium "x = 13"
         ]
     ]
-// testList "twoPointers" [
-//     let arr1 = [| 5; 1; 2; 5; 10; 7; 4; 9; 2; 8 |]
-//     let sumLR = fun l r -> Array.take r arr1 |> Array.skip l |> Array.sum
-//     testEqual (twoPointers 10 (fun l r -> sumLR l r >= 12) 0 (fun l r cond -> cond + 1) (fun l r cond -> cond)) 11 "counting"
-//     testEqual (twoPointers 10 (fun l r -> sumLR l r >= 28) 600 (fun l r cond -> cond) (fun l r cond -> min (r - l) cond)) 11 "min interval"
-// ]

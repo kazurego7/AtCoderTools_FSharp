@@ -75,6 +75,6 @@ let tests =
         ]
         testList "primeFactrization" [
             testError (fun () -> primeFactrization 1) "n <= 1"
-            testSeqEqual (primeFactrization 3) [ 0; 0; 0; 1 ] "prime"
+            testOrderedSeqEqual (primeFactrization 3) [ 0; 0; 0; 1 ] "prime"
         ]
     ]
