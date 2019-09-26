@@ -2,6 +2,7 @@
 
 open Microsoft.FSharp.Collections
 open System
+open System.Collections.Generic
 
 module Seq =
     let interval startInclusive endExclusive = seq { startInclusive..(endExclusive - 1) }
@@ -237,7 +238,7 @@ module Algorithm =
 
 module DataStructure =
     module UnionFind =
-        type Id = Int32
+        type private Id = Int32
         type UnionFind(n) =
             let mutable parent : Id [] = Array.init n id
             let mutable size : int32 [] = Array.create n 1
@@ -250,9 +251,8 @@ module DataStructure =
                     rootParent
 
             member this.Unite (u : Id) (v : Id) : unit =
-                match u, v with
-                | u, v when root u = root v -> ()
-                | _ ->
+                if root u = root v then ()
+                else
                     parent.[root u] <- root v
                     size.[root v] <- size.[root u] + size.[root v]
 
@@ -261,6 +261,36 @@ module DataStructure =
 
             member this.Find (u : Id) (v : Id) : bool =
                 root u = root v
+
+    module PriorityQueue =
+        let reverseCompare (x : 'a) (y : 'a) : int32 = compare x y * -1
+        type PriortyQueue<'a when 'a : comparison>(values : seq<'a>, comparison : 'a -> 'a -> int32) =
+            let dict = Seq.groupBy id values |> Seq.fold (fun (dic : Map<'a, Queue<'a>>) (key, value) -> dic.Add(key, (new Queue<'a>(value)))) Map.empty
+            let sortedDict = SortedDictionary<'a, Queue<'a>>(dict, comparison |> ComparisonIdentity.FromFunction)
+            let mutable size = 0
+            new(values : seq<'a>) = PriortyQueue(values, compare)
+
+            member this.Enqueue(item : 'a) : unit =
+                if sortedDict.ContainsKey item then sortedDict.[item].Enqueue(item)
+                else
+                    let added = new Queue<'a>()
+                    added.Enqueue(item)
+                    sortedDict.Add(item, added)
+                size <- size + 1
+
+            member this.Peek =
+                if Seq.isEmpty sortedDict then invalidOp "queue is Empty"
+
+                (Seq.head sortedDict).Value |> Seq.head
+            member this.Size = size
+            member this.Dequeue() : 'a =
+                if Seq.isEmpty sortedDict then invalidOp "queue is Empty"
+
+                let first = Seq.head sortedDict
+                if first.Value.Count <= 1 then sortedDict.Remove(first.Key) |> ignore
+
+                size <- size - 1
+                first.Value.Dequeue()
 
 open InputOutputs
 open NumericFunctions
