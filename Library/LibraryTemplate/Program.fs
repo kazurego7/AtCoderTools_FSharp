@@ -263,41 +263,43 @@ module DataStructure =
             member this.Find (u : Id) (v : Id) : bool =
                 root u = root v
 
+    let reverseCompare (x : 'a) (y : 'a) : int32 = compare x y * -1
+
     module PriorityQueue =
-        let reverseCompare (x : 'a) (y : 'a) : int32 = compare x y * -1
-        type PriortyQueue<'a when 'a : comparison and 'a : equality>(values : seq<'a>, comparison : 'a -> 'a -> int32) =
+        type PriorityQueue<'a when 'a : comparison and 'a : equality>(values : seq<'a>, comparison : 'a -> 'a -> int32) =
             let dict =
+                let sorted = SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
                 Seq.groupBy id values
-                    |> Seq.fold (fun (dic : Map<'a, Queue<'a>>) (key, value) -> dic.Add(key, (new Queue<'a>(value)))) Map.empty
-            let sortedDict =
-                SortedDictionary<'a, Queue<'a>>(dict, ComparisonIdentity.FromFunction comparison)
-            let mutable size = 0
-            new(values : seq<'a>) = PriortyQueue(values, compare)
+                    |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
+                sorted
+
+            let mutable size = dict.Count
+            new(values : seq<'a>) = PriorityQueue(values, compare)
 
             member this.Enqueue(item : 'a) : unit =
-                if sortedDict.ContainsKey item then sortedDict.[item].Enqueue(item)
+                if dict.ContainsKey item then dict.[item].Enqueue(item)
                 else
                     let added = new Queue<'a>()
                     added.Enqueue(item)
-                    sortedDict.Add(item, added)
+                    dict.Add(item, added)
                 size <- size + 1
 
             member this.Peek =
-                if Seq.isEmpty sortedDict then invalidOp "queue is Empty"
+                if Seq.isEmpty dict then invalidOp "queue is Empty"
 
-                (Seq.head sortedDict).Value |> Seq.head
+                (Seq.head dict).Value |> Seq.head
             member this.Size = size
             member this.Dequeue() : 'a =
-                if Seq.isEmpty sortedDict then invalidOp "queue is Empty"
+                if Seq.isEmpty dict then invalidOp "queue is Empty"
 
-                let first = Seq.head sortedDict
-                if first.Value.Count <= 1 then sortedDict.Remove(first.Key) |> ignore
+                let first = Seq.head dict
+                if first.Value.Count <= 1 then dict.Remove(first.Key) |> ignore
 
                 size <- size - 1
                 first.Value.Dequeue()
             interface IEnumerable<IEnumerable<'a>> with
                 member this.GetEnumerator() =
-                    (seq { for kv in sortedDict -> seq kv.Value }).GetEnumerator()
+                    (seq { for kv in dict -> seq kv.Value }).GetEnumerator()
             interface IEnumerable with
                 member this.GetEnumerator() =
                     (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator

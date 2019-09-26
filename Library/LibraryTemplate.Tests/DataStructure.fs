@@ -2,6 +2,7 @@ module DataStructure
 
 open AtCoder.DataStructure
 open Expecto
+open PriorityQueue
 open System
 open TestTools
 open UnionFind
@@ -32,5 +33,20 @@ let tests =
                     testError (fun () -> uf.Find 0 3) "v is equal or over n"
                 ]
             ]
+        ]
+        testList "reverseCompare" [
+                testValueEqual (reverseCompare 1 3) 1 "x < y -> x > y"
+            ]
+        testList "PriortyQueue" [
+            test "ok" {
+                let first = seq [ 1; 4; 3; 2; 3; 3 ]
+                let pq = PriorityQueue(first, reverseCompare)
+                Expect.equal pq.Peek 4 "peek 4"
+                Expect.equal pq.Size 4 "size 4"
+                pq.Enqueue 5 |> ignore
+                Expect.equal pq.Peek 5 "enqueue 5"
+                let five = pq.Dequeue()
+                Expect.equal five 5 "dequeue 5"
+            }
         ]
     ]
