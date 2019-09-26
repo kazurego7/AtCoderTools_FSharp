@@ -2,6 +2,7 @@
 
 open Microsoft.FSharp.Collections
 open System
+open System.Collections
 open System.Collections.Generic
 
 module Seq =
@@ -264,9 +265,12 @@ module DataStructure =
 
     module PriorityQueue =
         let reverseCompare (x : 'a) (y : 'a) : int32 = compare x y * -1
-        type PriortyQueue<'a when 'a : comparison>(values : seq<'a>, comparison : 'a -> 'a -> int32) =
-            let dict = Seq.groupBy id values |> Seq.fold (fun (dic : Map<'a, Queue<'a>>) (key, value) -> dic.Add(key, (new Queue<'a>(value)))) Map.empty
-            let sortedDict = SortedDictionary<'a, Queue<'a>>(dict, comparison |> ComparisonIdentity.FromFunction)
+        type PriortyQueue<'a when 'a : comparison and 'a : equality>(values : seq<'a>, comparison : 'a -> 'a -> int32) =
+            let dict =
+                Seq.groupBy id values
+                    |> Seq.fold (fun (dic : Map<'a, Queue<'a>>) (key, value) -> dic.Add(key, (new Queue<'a>(value)))) Map.empty
+            let sortedDict =
+                SortedDictionary<'a, Queue<'a>>(dict, ComparisonIdentity.FromFunction comparison)
             let mutable size = 0
             new(values : seq<'a>) = PriortyQueue(values, compare)
 
@@ -291,6 +295,13 @@ module DataStructure =
 
                 size <- size - 1
                 first.Value.Dequeue()
+            interface IEnumerable<IEnumerable<'a>> with
+                member this.GetEnumerator() =
+                    (seq { for kv in sortedDict -> seq kv.Value }).GetEnumerator()
+            interface IEnumerable with
+                member this.GetEnumerator() =
+                    (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
+
 
 open InputOutputs
 open NumericFunctions
