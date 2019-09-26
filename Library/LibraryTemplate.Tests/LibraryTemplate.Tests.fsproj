@@ -11,7 +11,8 @@
     <Compile Include="TestTools.fs" />
     <Compile Include="NumericFunctionsTest.fs" />
     <Compile Include="Algorithm.fs" />
-    <Compile Include="Main.fs" />
+    <Compile Include="DataStructure.fs"/>
+    <Compile Include="Main.fs"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expecto" Version="8.*" />

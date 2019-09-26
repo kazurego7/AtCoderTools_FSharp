@@ -235,6 +235,33 @@ module Algorithm =
             else if f ml > f mr then ternarySearchUpward l mr f e
             else ternarySearchUpward ml mr f e
 
+module DataStructure =
+    module UnionFind =
+        type Id = Int32
+        type UnionFind(n) =
+            let mutable parent : Id [] = Array.init n id
+            let mutable size : int32 [] = Array.create n 1
+
+            let rec root u =
+                if parent.[u] = u then u
+                else
+                    let rootParent = root parent.[u]
+                    parent.[u] <- rootParent
+                    rootParent
+
+            member this.Unite (u : Id) (v : Id) : unit =
+                match u, v with
+                | u, v when root u = root v -> ()
+                | _ ->
+                    parent.[root u] <- root v
+                    size.[root v] <- size.[root u] + size.[root v]
+
+            member this.Size(u : Id) : int32 =
+                size.[root u]
+
+            member this.Find (u : Id) (v : Id) : bool =
+                root u = root v
+
 open InputOutputs
 open NumericFunctions
 
