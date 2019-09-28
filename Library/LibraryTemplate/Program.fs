@@ -1,9 +1,12 @@
 ﻿module AtCoder
 
+
 open Microsoft.FSharp.Collections
 open System
 open System.Collections
 open System.Collections.Generic
+
+#nowarn "0025" // パターンマッチが不完全である警告の無効
 
 module Seq =
     let interval startInclusive endExclusive = seq { startInclusive..(endExclusive - 1) }
@@ -27,10 +30,10 @@ module InputOutputs =
 
     let readInt32() : int32 = read() |> int32
     let readInt64() : int64 = read() |> int64
-    let inline int32s (source : seq<'a>) : seq<int32> = Seq.map int32 source
-    let inline int64s (source : seq<'a>) : seq<int64> = Seq.map int64 source
-    let readInt32s() : seq<int32> = reads() |> int32s
-    let readInt64s() : seq<int64> = reads() |> int64s
+    let inline int32s (source : 'a []) : int32 [] = Array.map int32 source
+    let inline int64s (source : 'a []) : int64 [] = Array.map int64 source
+    let readInt32s() : int32 [] = reads() |> int32s
+    let readInt64s() : int64 [] = reads() |> int64s
     let inline print (item : 'a) : unit = printfn "%A" item
 
     let inline printRow (line : seq<'a>) : unit =
@@ -309,4 +312,9 @@ open InputOutputs
 open NumericFunctions
 
 [<EntryPoint>]
-let main _ = 0 // return an integer exit code
+let main _ =
+    let [| a; b; c |] = readInt32s()
+    print a
+    print b
+    print c
+    0 // return an integer exit code
