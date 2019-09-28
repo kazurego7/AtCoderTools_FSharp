@@ -313,8 +313,5 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
-    let [| a; b; c |] = readInt32s()
-    print a
-    print b
-    print c
+
     0 // return an integer exit code
