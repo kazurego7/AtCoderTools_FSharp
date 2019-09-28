@@ -309,6 +309,8 @@ module DataStructure =
                     (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
 
 
+open Algorithm
+open DataStructure
 open InputOutputs
 open NumericFunctions
 
