@@ -71,10 +71,12 @@ let tests =
         ]
         testList "primes" [
             testError (fun () -> primes 1) "n <= 1"
-            testSeqEqual (primes 13) [ 2; 3; 5; 7; 11; 13 ] "not inclusive n"
+            testSeqEqual (primes 12) [ 2; 3; 5; 7; 11 ] "coprime"
+            testSeqEqual (primes 13) [ 2; 3; 5; 7; 11; 13 ] "prime"
         ]
         testList "primeFactrization" [
             testError (fun () -> primeFactrization 1) "n <= 1"
-            testOrderedSeqEqual (primeFactrization 3) [ 0; 0; 0; 1 ] "prime"
+            testSeqEqual (primeFactrization 60) [ 2, 2; 3, 1; 5, 1; ] "coprime"
+            testSeqEqual (primeFactrization 7) [ 7, 1 ] "prime"
         ]
     ]

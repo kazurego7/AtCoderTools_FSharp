@@ -167,22 +167,22 @@ module NumericFunctions =
                 ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
             ps
 
-    /// 素因数分解 O(N loglog N)
-    /// インデックスの数 -> 指数　の対応を持つ配列を返す
-    let primeFactrization (n : int32) : int32 [] =
+    /// 素因数分解 O(√N loglog √N)
+    let primeFactrization (n : int32) : seq<int32 * int32> =
         match n with
         | n when n <= 1 -> invalidArg "n" "n <= 1"
         | _ ->
-            let ps = primes n |> Seq.toArray
+            let ps = primes (int32 (sqrt (float n)))
+            if Seq.forall (fun p -> n % p <> 0) ps then seq { yield (n, 1) }
+            else
+                // a * b^x からxを求める
+                let rec invPow a b x =
+                    if (a % b <> 0) then x
+                    else invPow (a / b) b (x + 1)
+                ps
+                    |> Seq.filter (fun p -> n % p = 0)
+                    |> Seq.map (fun p -> (p, invPow n p 0))
 
-            let rec helper (quotient : int32) (i : int32) (primeCounts : int32 []) : int32 [] =
-                match quotient with
-                | quotient when quotient = 1 -> primeCounts
-                | quotient when quotient % ps.[i] <> 0 -> helper quotient (i + 1) primeCounts
-                | _ ->
-                    primeCounts.[ps.[i]] <- primeCounts.[ps.[i]] + 1
-                    helper (quotient / ps.[i]) (i + 1) primeCounts
-            helper n 0 (Array.zeroCreate (n + 1))
 
 module Algorithm =
     let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32) (ok : int32) : int32 =
