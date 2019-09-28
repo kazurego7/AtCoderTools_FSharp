@@ -19,14 +19,14 @@ module InputOutputs =
     let read() : string = Console.ReadLine()
     let reads() : string [] = read().Split()
 
-    let readMatrix() : string [,] =
-        let mutable lines = []
-        let line = reads() |> Array.toSeq
-        while not (Seq.isEmpty line) do
-            lines <- line :: lines
+    let readMatrix (rowNum : int32) : string [,] =
+        let mutable lines = Array.zeroCreate rowNum
+        for i in Seq.interval 0 rowNum do
+            lines.[i] <- reads()
+
         lines
-        |> Seq.rev
-        |> array2D
+            |> array2D
+
 
     let readInt32() : int32 = read() |> int32
     let readInt64() : int64 = read() |> int64
@@ -34,8 +34,8 @@ module InputOutputs =
     let inline int64s (source : 'a []) : int64 [] = Array.map int64 source
     let readInt32s() : int32 [] = reads() |> int32s
     let readInt64s() : int64 [] = reads() |> int64s
-    let inline print (item : 'a) : unit = printfn "%A" item
 
+    let inline print (item : 'a) : unit = printfn "%s" (string item)
     let inline printRow (line : seq<'a>) : unit =
         let strs = line |> Seq.map string
         if Seq.isEmpty strs then
@@ -313,5 +313,4 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
-
     0 // return an integer exit code
