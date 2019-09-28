@@ -36,9 +36,10 @@ module InputOutputs =
     let readInt64s() : int64 [] = reads() |> int64s
 
     let inline print (item : 'a) : unit = printfn "%s" (string item)
+
     let inline printRow (line : seq<'a>) : unit =
         let strs = line |> Seq.map string
-        if Seq.isEmpty strs then
+        if not (Seq.isEmpty strs) then
             printf "%s" (Seq.head strs)
             for s in Seq.skip 1 strs do
                 printf " %s" s
@@ -313,4 +314,5 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
+
     0 // return an integer exit code
