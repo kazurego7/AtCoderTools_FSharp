@@ -25,7 +25,7 @@ module InputOutputs =
             lines.[i] <- reads()
 
         lines
-            |> array2D
+        |> array2D
 
 
     let readInt32() : int32 = read() |> int32
@@ -38,7 +38,9 @@ module InputOutputs =
     let inline print (item : 'a) : unit = printfn "%s" (string item)
 
     let inline printRow (line : seq<'a>) : unit =
-        let strs = line |> Seq.map string
+        let strs =
+            line
+            |> Seq.map string
         if not (Seq.isEmpty strs) then
             printf "%s" (Seq.head strs)
             for s in Seq.skip 1 strs do
@@ -98,7 +100,9 @@ module NumericFunctions =
             | (n, _) when n < 0 -> invalidArg "n" "n >= 0"
             | (_, k) when k < 0 -> invalidArg "k" "k >= 0"
             | (n, k) when k > n -> 0
-            | _ -> seq { n - k + 1..n } |> Seq.fold this.Mul 1
+            | _ ->
+                seq { n - k + 1..n }
+                |> Seq.fold this.Mul 1
 
         member this.FactTable(nMax : int32) : int32 [] =
             seq { 1..nMax }
@@ -154,35 +158,40 @@ module NumericFunctions =
         match (m, n) with
         | (_, n) when n <= 0L -> invalidArg "n" "n <= 0"
         | (m, n) when m < n -> commonDivisor n m
-        | _ -> divisors m |> Seq.filter (fun md -> n % md = 0L)
+        | _ -> divisors n |> Seq.filter (fun nd -> m % nd = 0L)
 
     /// エラトステネスの篩 O(N loglog N)
     let primes (n : int32) : seq<int32> =
         match n with
         | n when n <= 1 -> invalidArg "n" "n <= 1"
         | _ ->
-            let mutable ps = Seq.interval 2 (n + 1)
-            while not (Seq.isEmpty ps) && Seq.head ps <= int32 (sqrt (float n)) do
-                let m = Seq.head ps
-                ps <- seq { yield m } |> Seq.append (Seq.filter (fun p -> p % m <> 0) ps)
-            ps
+            let sqrtN = int32 (sqrt (float n))
+            let mutable sieve = Seq.interval 2 (n + 1) |> Seq.toList
+            let mutable ps = []
+            while not (List.isEmpty sieve) && List.head sieve <= sqrtN do
+                let m = List.head sieve
+                ps <- m :: ps
+                sieve <- List.filter (fun p -> p % m <> 0) sieve
+            List.append ps sieve |> Seq.ofList
 
-    /// 素因数分解 O(√N loglog √N)
-    let primeFactrization (n : int32) : seq<int32 * int32> =
+    /// 試し割り法 O(√N)
+    let primeFactrization (n : int64) : seq<int64 * int64> =
         match n with
-        | n when n <= 1 -> invalidArg "n" "n <= 1"
+        | n when n <= 1L -> invalidArg "n" "n <= 1"
         | _ ->
-            let ps = primes (int32 (sqrt (float n)))
-            if Seq.forall (fun p -> n % p <> 0) ps then seq { yield (n, 1) }
-            else
-                // a * b^x からxを求める
-                let rec invPow a b x =
-                    if (a % b <> 0) then x
-                    else invPow (a / b) b (x + 1)
-                ps
-                    |> Seq.filter (fun p -> n % p = 0)
-                    |> Seq.map (fun p -> (p, invPow n p 0))
-
+            let mutable i = 2L
+            let mutable m = n
+            let mutable ps = []
+            while i * i <= n do
+                if m % i = 0L then
+                    let mutable count = 0L
+                    while m % i = 0L do
+                        count <- count + 1L
+                        m <- m / i
+                    ps <- (int64 i, count) :: ps
+                i <- i + 1L
+            if m <> 1L then ps <- (m, 1L) :: ps
+            List.toSeq ps
 
 module Algorithm =
     let rec binarySearch (source : 'a []) (predicate : 'a -> bool) (ng : int32) (ok : int32) : int32 =
@@ -217,9 +226,9 @@ module Algorithm =
         | n ->
             let cutIxs =
                 Seq.interval 1 n
-                    |> Seq.filter (fun i -> source.[i] <> source.[i - 1])
+                |> Seq.filter (fun i -> source.[i] <> source.[i - 1])
             Seq.append (Seq.append (seq { yield 0 }) cutIxs) (seq { yield n })
-                |> Seq.mapAdjacent (fun i0 i1 -> (string source.[i0], i1 - i0))
+            |> Seq.mapAdjacent (fun i0 i1 -> (string source.[i0], i1 - i0))
 
     let rec ternarySearchDownward (left : float) (right : float) (convexFunction : float -> float) (allowableError : float) =
         match left, right, convexFunction, allowableError with
@@ -274,7 +283,7 @@ module DataStructure =
             let dict =
                 let sorted = SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
                 Seq.groupBy id values
-                    |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
+                |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
                 sorted
 
             let mutable size = dict.Count

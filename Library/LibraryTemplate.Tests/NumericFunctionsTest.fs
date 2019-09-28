@@ -75,8 +75,9 @@ let tests =
             testSeqEqual (primes 13) [ 2; 3; 5; 7; 11; 13 ] "prime"
         ]
         testList "primeFactrization" [
-            testError (fun () -> primeFactrization 1) "n <= 1"
-            testSeqEqual (primeFactrization 60) [ 2, 2; 3, 1; 5, 1; ] "coprime"
-            testSeqEqual (primeFactrization 7) [ 7, 1 ] "prime"
+            testError (fun () -> primeFactrization 1L) "n <= 1"
+            testSeqEqual (primeFactrization 60L) [ 2L, 2L; 3L, 1L; 5L, 1L; ] "coprime"
+            testSeqEqual (primeFactrization 7L) [ 7L, 1L ] "prime"
+            testSeqEqual (primeFactrization 14L) [ 2L, 1L; 7L, 1L ] "prime * 2"
         ]
     ]
