@@ -30,10 +30,16 @@ module InputOutputs =
 
     let readInt32() : int32 = read() |> int32
     let readInt64() : int64 = read() |> int64
-    let inline int32s (source : 'a []) : int32 [] = Array.map int32 source
-    let inline int64s (source : 'a []) : int64 [] = Array.map int64 source
-    let readInt32s() : int32 [] = reads() |> int32s
-    let readInt64s() : int64 [] = reads() |> int64s
+    let readInt32s() : int32 [] = reads() |> Array.map int32
+    let readInt64s() : int64 [] = reads() |> Array.map int64
+
+    let readMatrixInt32 (rowNum : int32) : int32 [,] =
+        readMatrix rowNum
+        |> Array2D.map int32
+
+    let readMatrixInt64 (rowNum : int32) : int64 [,] =
+        readMatrix rowNum
+        |> Array2D.map int64
 
     let inline print (item : 'a) : unit = printfn "%s" (string item)
 
