@@ -23,11 +23,12 @@ let tests =
                     let sizes = seq { 0 .. 4 } |> Seq.map uf.Size
                     Expect.sequenceContainsOrder sizes
                         (seq {
-                            4
-                            4
-                            4
-                            4
-                            1 }) ""
+                            yield 4
+                            yield 4
+                            yield 4
+                            yield 4
+                            yield 1
+                         }) ""
                 }
                 testList "Errors"
                     [ let uf = UnionFind 3
