@@ -12,6 +12,7 @@
     <Compile Include="NumericFunctionsTest.fs" />
     <Compile Include="Algorithm.fs" />
     <Compile Include="DataStructure.fs"/>
+    <Compile Include="Array2D.fs"/>
     <Compile Include="Main.fs"/>
   </ItemGroup>
   <ItemGroup>
