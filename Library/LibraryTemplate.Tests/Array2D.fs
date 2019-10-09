@@ -10,7 +10,7 @@ let tests =
         [ testList "transpose"
               [ testCase "empty" <| fun () -> Expect.equal [| [||] |] [| [||] |] "empty -> empty"
                 testCase "rowVector"
-                <| fun () ->
+                    (fun () ->
                     let expected =
                         [ [ 1 ]
                           [ 2 ]
@@ -25,9 +25,9 @@ let tests =
                     Seq.interval 0 3
                     |> Seq.iter
                         (fun i ->
-                        Expect.sequenceContainsOrder expected.[i, *] actual.[i, *] "[ [1; 2; 3] ] -> [ [1]; [2]; [3] ]")
+                        Expect.sequenceContainsOrder expected.[i, *] actual.[i, *] "[ [1; 2; 3] ] -> [ [1]; [2]; [3] ]"))
                 testCase "columnVector"
-                <| fun () ->
+                    (fun () ->
                     let expected = [ [ 1 .. 3 ] ] |> array2D
 
                     let actual =
@@ -40,10 +40,9 @@ let tests =
                     Seq.interval 0 3
                     |> Seq.iter
                         (fun i ->
-                        Expect.sequenceContainsOrder expected.[*, i] actual.[*, i] "[ [1]; [2]; [3] ] -> [ [1; 2; 3] ]")
+                        Expect.sequenceContainsOrder expected.[*, i] actual.[*, i] "[ [1]; [2]; [3] ] -> [ [1; 2; 3] ]"))
                 testCase "matrix"
-                <| fun () ->
-
+                    (fun () ->
                     let expected =
                         [ [ 1; 4 ]
                           [ 2; 5 ]
@@ -59,4 +58,4 @@ let tests =
                     for i in Seq.interval 0 3 do
                         for k in Seq.interval 0 2 do
                             Expect.equal expected.[i, k] actual.[i, k]
-                                "[ [1;4]; [2;5]; [3;6] ] -> [ [1; 2; 3]; [4; 5; 6] ]" ] ]
+                                "[ [1;4]; [2;5]; [3;6] ] -> [ [1; 2; 3]; [4; 5; 6] ]") ] ]
