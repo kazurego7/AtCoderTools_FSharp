@@ -97,13 +97,6 @@ module NumericFunctions =
                 if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i]
                 else acm) 1
 
-
-
-
-
-
-
-
         /// フェルマーの小定理より
         member this.Inv(a: int32): int32 = this.Pow a (this.divisor - 2)
 
@@ -278,13 +271,6 @@ module DataStructure =
                     parent.[u] <- rootParent
                     rootParent
 
-
-
-
-
-
-
-
             member this.Unite (u: Id) (v: Id): unit =
                 if root u = root v then
                     ()
@@ -317,13 +303,6 @@ module DataStructure =
                     added.Enqueue(item)
                     dict.Add(item, added)
                 size <- size + 1
-
-
-
-
-
-
-
 
             member this.Peek =
                 if Seq.isEmpty dict then invalidOp "queue is Empty"
