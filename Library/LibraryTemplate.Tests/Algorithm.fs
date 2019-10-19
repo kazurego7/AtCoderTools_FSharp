@@ -28,4 +28,16 @@ let tests =
                     Accuracy.medium "x = 13" ]
           testList "ternarySearchUpward"
               [ testApproximation (ternarySearchUpward 0.0 20.0 (fun x -> -(x - 13.0) * (x - 13.0)) 0.000000001) 13.0
-                    Accuracy.medium "x = 13" ] ]
+                    Accuracy.medium "x = 13" ]
+
+          testList "checkFlag"
+              [ testCase "ok1" <| fun () ->
+                  let expected = true
+                  let actual = checkFlag (pown 2 4 + pown 2 1) 4
+                  Expect.equal actual expected "10010 4"
+                testCase "ok2" <| fun () ->
+                    let expected = false
+                    let actual = checkFlag (pown 2 4 + pown 2 1) 3
+                    Expect.equal actual expected "10010 3"
+                test "negative flag" { Expect.throws (fun () -> checkFlag -1 4 |> ignore) "flag < 0" }
+                test "negative flagNumber" { Expect.throws (fun () -> checkFlag 1 -1 |> ignore) "flagNumber < 0" } ] ]

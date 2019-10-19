@@ -255,6 +255,11 @@ module Algorithm =
             else if f ml > f mr then ternarySearchUpward l mr f e
             else ternarySearchUpward ml mr f e
 
+    let checkFlag (flag : int) (flagNumber : int) : bool =
+        if (flag < 0) then invalidArg "flag" "flag < 0"
+        if (flagNumber < 0) then invalidArg "flagNumber" "flagNumber < 0"
+        flag >>> flagNumber &&& 1 = 1
+
 module DataStructure =
     module UnionFind =
         type private Id = Int32
