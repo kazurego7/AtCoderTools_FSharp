@@ -201,31 +201,25 @@ module NumericFunctions =
             List.toSeq ps
 
 module Algorithm =
-    let rec binarySearch (source: 'a []) (predicate: 'a -> bool) (ng: int32) (ok: int32): int32 =
+    let rec binarySearch (predicate: int64 -> bool) (ng: int64) (ok: int64): int64 =
         match (ok, ng) with
-        | (ok, ng) when abs (ok - ng) = 1 -> ok
+        | (ok, ng) when abs (ok - ng) = 1L -> ok
         | _ ->
-            let mid = (ok + ng) / 2
-            if predicate source.[mid] then binarySearch source predicate ng mid
-            else binarySearch source predicate mid ok
+            let mid = (ok + ng) / 2L
+            if predicate mid then binarySearch predicate ng mid
+            else binarySearch predicate mid ok
 
-    let leftBinarySearch (source: 'a []) (predicate: 'a -> bool): int32 option =
-        match source.Length with
-        | len when len = Int32.MaxValue -> invalidArg "source" "It is equal Int32."
-        | _ ->
-            binarySearch source predicate source.Length -1
-            |> fun ix ->
-                if ix < 0 then None
-                else Some ix
+    let leftBinarySearch (size: int64) (predicate: int64 -> bool): int64 option =
+        binarySearch predicate size -1L
+        |> fun ix ->
+            if ix = -1L then None
+            else Some ix
 
-    let rightBinarySearch (source: 'a []) (predicate: 'a -> bool) =
-        match source.Length with
-        | len when len = Int32.MaxValue -> invalidArg "source" "It is equal Int32."
-        | _ ->
-            binarySearch source predicate -1 source.Length
-            |> fun ix ->
-                if ix >= source.Length then None
-                else Some ix
+    let rightBinarySearch (size: int64) (predicate: int64 -> bool): int64 option =
+        binarySearch predicate -1L size
+        |> fun ix ->
+            if ix = size then None
+            else Some ix
 
     let runLengthEncoding (source: string): seq<string * int32> =
         match source.Length with
