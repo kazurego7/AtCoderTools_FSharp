@@ -281,6 +281,8 @@ module DataStructure =
 
             member this.Find (u: Id) (v: Id): bool = root u = root v
 
+            member this.Root (u: int32) : Id = root u
+
     let reverseCompare (x: 'a) (y: 'a): int32 = compare x y * -1
 
     module PriorityQueue =

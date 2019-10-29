@@ -18,6 +18,7 @@ let tests =
                           (0, 2) ]
 
                     let uf = UnionFind 5
+                    // (0 1 2 3) (4)
                     for (u, v) in ids do
                         uf.Unite u v
                     let sizes = seq { 0 .. 4 } |> Seq.map uf.Size
