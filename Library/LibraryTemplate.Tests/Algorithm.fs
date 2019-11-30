@@ -27,20 +27,6 @@ let tests =
                     let actual = binarySearch (fun i -> arr.[int32 i] > 10) -1L (int64 arr.Length)
                     Expect.equal actual expected "i = 5"
                 } ]
-          testList "leftBinarySearch"
-              [ test "left over" {
-                    let arr = [| 5 .. 10 |]
-                    let expected = None
-                    let actual = leftBinarySearch (int64 arr.Length) (fun i -> arr.[int32 i] < 5)
-                    Expect.equal actual expected "None"
-                } ]
-          testList "rightBinarySearch"
-              [ test "left over" {
-                    let arr = [| 5 .. 10 |]
-                    let expected = None
-                    let actual = rightBinarySearch (int64 arr.Length) (fun i -> arr.[int32 i] > 10)
-                    Expect.equal actual expected "None"
-                } ]
           testList "runLengthEncoding"
               [ testOrderedSeqEqual (runLengthEncoding "") [] "empty"
                 testOrderedSeqEqual (runLengthEncoding "aabbbbc")

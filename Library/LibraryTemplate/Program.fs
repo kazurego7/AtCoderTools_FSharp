@@ -97,6 +97,10 @@ module NumericFunctions =
                 if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i]
                 else acm) 1
 
+
+
+
+
         /// フェルマーの小定理より
         member this.Inv(a: int32): int32 = this.Pow a (this.divisor - 2)
 
@@ -201,25 +205,25 @@ module NumericFunctions =
             List.toSeq ps
 
 module Algorithm =
-    let rec binarySearch (predicate: int64 -> bool) (ng: int64) (ok: int64): int64 =
-        match (ok, ng) with
+    let rec binarySearch (predicate: int64 -> bool) (exclusiveNg: int64) (exclusiveOk: int64): int64 =
+        match (exclusiveOk, exclusiveNg) with
         | (ok, ng) when abs (ok - ng) = 1L -> ok
         | _ ->
-            let mid = (ok + ng) / 2L
-            if predicate mid then binarySearch predicate ng mid
-            else binarySearch predicate mid ok
+            let mid = (exclusiveOk + exclusiveNg) / 2L
+            if predicate mid then binarySearch predicate exclusiveNg mid
+            else binarySearch predicate mid exclusiveOk
 
-    let leftBinarySearch (size: int64) (predicate: int64 -> bool): int64 option =
-        binarySearch predicate size -1L
-        |> fun ix ->
-            if ix = -1L then None
-            else Some ix
+    let leftBinarySearch (predicate: int64 -> bool) (left: int64) (right: int64): Option<int64> =
+        if left >= right then invalidArg "l, r" "l >= r"
+        let bs = binarySearch predicate right left
+        if bs = left then None
+        else Some bs
 
-    let rightBinarySearch (size: int64) (predicate: int64 -> bool): int64 option =
-        binarySearch predicate -1L size
-        |> fun ix ->
-            if ix = size then None
-            else Some ix
+    let rightBinarySearch (predicate: int64 -> bool) (left: int64) (right: int64): Option<int64> =
+        if left >= right then invalidArg "l, r" "l >= r"
+        let bs = binarySearch predicate left right
+        if bs = right then None
+        else Some bs
 
     let runLengthEncoding (source: string): seq<string * int32> =
         match source.Length with
@@ -249,7 +253,7 @@ module Algorithm =
             else if f ml > f mr then ternarySearchUpward l mr f e
             else ternarySearchUpward ml mr f e
 
-    let checkFlag (flag : int) (flagNumber : int) : bool =
+    let checkFlag (flag: int) (flagNumber: int): bool =
         if (flag < 0) then invalidArg "flag" "flag < 0"
         if (flagNumber < 0) then invalidArg "flagNumber" "flagNumber < 0"
         flag >>> flagNumber &&& 1 = 1
@@ -270,6 +274,10 @@ module DataStructure =
                     parent.[u] <- rootParent
                     rootParent
 
+
+
+
+
             member this.Unite (u: Id) (v: Id): unit =
                 if root u = root v then
                     ()
@@ -281,7 +289,7 @@ module DataStructure =
 
             member this.Find (u: Id) (v: Id): bool = root u = root v
 
-            member this.Root (u: int32) : Id = root u
+            member this.Root(u: int32): Id = root u
 
     let reverseCompare (x: 'a) (y: 'a): int32 = compare x y * -1
 
@@ -304,6 +312,10 @@ module DataStructure =
                     added.Enqueue(item)
                     dict.Add(item, added)
                 size <- size + 1
+
+
+
+
 
             member this.Peek =
                 if Seq.isEmpty dict then invalidOp "queue is Empty"
