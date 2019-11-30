@@ -1,6 +1,5 @@
 ﻿module AtCoder
 
-
 open Microsoft.FSharp.Collections
 open System
 open System.Collections
@@ -21,7 +20,6 @@ module Array2D =
         let transposed = Array2D.zeroCreate (Array2D.length2 array) (Array2D.length1 array)
         transposed |> Array2D.mapi (fun i k _ -> array.[k, i])
 
-
 module InputOutputs =
     let read(): string = Console.ReadLine()
     let reads(): string [] = read().Split()
@@ -32,7 +30,6 @@ module InputOutputs =
             lines.[i] <- reads()
 
         lines |> array2D
-
 
     let readInt32(): int32 = read() |> int32
     let readInt64(): int64 = read() |> int64
@@ -74,6 +71,7 @@ module NumericFunctions =
             else b
 
         member this.Mod(a: int32) = this.Mod(int64 a)
+
         member this.Add (a: int32) (b: int32): int32 = (this.Mod a + this.Mod b) % this.divisor
 
         member this.Sub (a: int32) (b: int32): int32 =
@@ -83,6 +81,8 @@ module NumericFunctions =
 
         member this.Mul (a: int32) (b: int32): int32 =
             (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
+
+        member this.Div (a: int32) (b: int32): int32 = this.Mul a (this.Inv b)
 
         /// 二分累積 O(Log N)
         member this.Pow (b: int32) (n: int32): int32 =
@@ -97,14 +97,8 @@ module NumericFunctions =
                 if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i]
                 else acm) 1
 
-
-
-
-
         /// フェルマーの小定理より
         member this.Inv(a: int32): int32 = this.Pow a (this.divisor - 2)
-
-        member this.Div (a: int32) (b: int32): int32 = this.Mul a (this.Inv b)
 
         member this.Perm (n: int32) (k: int32): int32 =
             match (n, k) with
@@ -213,18 +207,6 @@ module Algorithm =
             if predicate mid then binarySearch predicate exclusiveNg mid
             else binarySearch predicate mid exclusiveOk
 
-    let leftBinarySearch (predicate: int64 -> bool) (left: int64) (right: int64): Option<int64> =
-        if left >= right then invalidArg "l, r" "l >= r"
-        let bs = binarySearch predicate right left
-        if bs = left then None
-        else Some bs
-
-    let rightBinarySearch (predicate: int64 -> bool) (left: int64) (right: int64): Option<int64> =
-        if left >= right then invalidArg "l, r" "l >= r"
-        let bs = binarySearch predicate left right
-        if bs = right then None
-        else Some bs
-
     let runLengthEncoding (source: string): seq<string * int32> =
         match source.Length with
         | n when n = 0 -> Seq.empty
@@ -264,7 +246,6 @@ module DataStructure =
 
         type UnionFind(n) =
             let mutable parent: Id [] = Array.init n id
-            let mutable size: int32 [] = Array.create n 1
 
             let rec root u =
                 if parent.[u] = u then
@@ -274,9 +255,7 @@ module DataStructure =
                     parent.[u] <- rootParent
                     rootParent
 
-
-
-
+            let mutable size: int32 [] = Array.create n 1
 
             member this.Unite (u: Id) (v: Id): unit =
                 if root u = root v then
@@ -304,6 +283,13 @@ module DataStructure =
             let mutable size = dict.Count
             new(values: seq<'a>) = PriorityQueue(values, compare)
 
+            member this.Peek =
+                if Seq.isEmpty dict then invalidOp "queue is Empty"
+
+                (Seq.head dict).Value |> Seq.head
+
+            member this.Size = size
+
             member this.Enqueue(item: 'a): unit =
                 if dict.ContainsKey item then
                     dict.[item].Enqueue(item)
@@ -312,17 +298,6 @@ module DataStructure =
                     added.Enqueue(item)
                     dict.Add(item, added)
                 size <- size + 1
-
-
-
-
-
-            member this.Peek =
-                if Seq.isEmpty dict then invalidOp "queue is Empty"
-
-                (Seq.head dict).Value |> Seq.head
-
-            member this.Size = size
 
             member this.Dequeue(): 'a =
                 if Seq.isEmpty dict then invalidOp "queue is Empty"
@@ -352,3 +327,4 @@ open NumericFunctions
 let main _ =
 
     0 // return an integer exit code
+ 
