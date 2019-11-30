@@ -319,38 +319,44 @@ module DataStructure =
                 member this.GetEnumerator() = (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
 
 module Template =
+    open InputOutputs
     /// 木構造の BFS ( DFS は、 order の Queue の部分を Stack にして、 Dequeue を Pop 、 Enqueue を Push にすれば良いだけ)
-    module TreeBFS =
+    let TreeBFS() =
         // 与えられた頂点数と辺
-        let N = 0
-        let A = Array.create N 0
-        let B = Array.create N 0
+        let N = readInt32()
+        let ab = readMatrixInt32 (N - 1)
+        let a = ab.[*, 0]
+        let b = ab.[*, 1]
 
         // 木構造の初期化
         let tree = Array.create N []
 
-        for i in Seq.interval 0 N do
-            tree.[A.[i] - 1] <- (B.[i] - 1) :: tree.[A.[i] - 1]
-            tree.[B.[i] - 1] <- (A.[i] - 1) :: tree.[B.[i] - 1]
+        for i in Seq.interval 0 (N - 1) do
+            tree.[a.[i] - 1] <- (b.[i] - 1) :: tree.[a.[i] - 1]
+            tree.[b.[i] - 1] <- (a.[i] - 1) :: tree.[b.[i] - 1]
 
         let order = new Queue<int32>()
-        let reached = Array.create (N - 1) false
-        let parents = Array.create (N - 1) None // 最終的に None が親のものが Root になる
+        order.Enqueue(0)
+        let reached = Array.create N false
+        reached.[0] <- true
         let pruningCondition = false // 枝刈り条件
 
         // bfs
         while not (Seq.isEmpty order) do
             let node = order.Dequeue()
-            // ************具体的な処理***************
+
+            // ************ノードの処理***************
 
             // **************************************
-            for child in tree.[node] do
-                if reached.[child] || pruningCondition then
-                    ()
-                else
-                    order.Enqueue(child)
-                    reached.[child] <- true
-                    parents.[child] <- Some node
+            let childs = List.filter (fun child -> not reached.[child] && not pruningCondition) tree.[node]
+
+            // ************エッジの処理***************
+            for child in childs do
+                ()
+            // **************************************
+            for child in childs do
+                order.Enqueue(child)
+                reached.[child] <- true
 
 
 open Algorithm
