@@ -241,10 +241,11 @@ module Algorithm =
         flag >>> flagNumber &&& 1 = 1
 
 module DataStructure =
+
     module UnionFind =
         type private Id = Int32
 
-        type UnionFind(n) =
+        type UnionFind(n: int32) =
             let mutable parent: Id [] = Array.init n id
 
             let rec root u =
@@ -268,7 +269,7 @@ module DataStructure =
 
             member this.Find (u: Id) (v: Id): bool = root u = root v
 
-            member this.Root(u: int32): Id = root u
+            member this.Id(u: int32): Id = root u
 
     let reverseCompare (x: 'a) (y: 'a): int32 = compare x y * -1
 
@@ -316,6 +317,40 @@ module DataStructure =
 
             interface IEnumerable with
                 member this.GetEnumerator() = (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
+
+module Template =
+    /// 木構造の BFS ( DFS は、 order の Queue の部分を Stack にして、 Dequeue を Pop 、 Enqueue を Push にすれば良いだけ)
+    module TreeBFS =
+        // 与えられた頂点数と辺
+        let N = 0
+        let A = Array.create N 0
+        let B = Array.create N 0
+
+        // 木構造の初期化
+        let tree = Array.create N []
+
+        for i in Seq.interval 0 N do
+            tree.[A.[i] - 1] <- (B.[i] - 1) :: tree.[A.[i] - 1]
+            tree.[B.[i] - 1] <- (A.[i] - 1) :: tree.[B.[i] - 1]
+
+        let order = new Queue<int32>()
+        let reached = Array.create (N - 1) false
+        let parents = Array.create (N - 1) None // 最終的に None が親のものが Root になる
+        let pruningCondition = false // 枝刈り条件
+
+        // bfs
+        while not (Seq.isEmpty order) do
+            let node = order.Dequeue()
+            // ************具体的な処理***************
+
+            // **************************************
+            for child in tree.[node] do
+                if reached.[child] || pruningCondition then
+                    ()
+                else
+                    order.Enqueue(child)
+                    reached.[child] <- true
+                    parents.[child] <- Some node
 
 
 open Algorithm
