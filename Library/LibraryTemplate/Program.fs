@@ -240,6 +240,24 @@ module Algorithm =
         if (flagNumber < 0) then invalidArg "flagNumber" "flagNumber < 0"
         flag >>> flagNumber &&& 1 = 1
 
+    let rec permutaions (xs: list<'a>): list<list<'a>> =
+        match xs with
+        | [] -> [ [] ]
+        | [ x ] -> [ [ x ] ]
+        | _ ->
+            xs
+            |> List.mapi (fun i x -> x, (List.append (List.take i xs) (List.skip (i + 1) xs)))
+            |> List.collect (fun (y, other) -> List.map (fun ys -> y :: ys) (permutaions other))
+
+    let rec fastPermutations (xs: list<'a>) =
+        let rec insertions (x: 'a) (ys: list<'a>): list<list<'a>> =
+            match ys with
+            | [] -> [ [ x ] ]
+            | (z :: zs) as l -> (x :: l) :: (List.map (fun w -> z :: w) (insertions x zs))
+        match xs with
+        | [] -> [ [] ]
+        | y :: ys -> List.collect (insertions y) (fastPermutations ys)
+
 module DataStructure =
 
     module UnionFind =
