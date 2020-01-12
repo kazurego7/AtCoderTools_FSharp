@@ -43,11 +43,11 @@ let tests =
           testList "checkFlag"
               [ testCase "ok1" <| fun () ->
                   let expected = true
-                  let actual = checkFlag (pown 2 4 + pown 2 1) 4
+                  let actual = checkFlag (pown 2L 4 + pown 2L 1) 4
                   Expect.equal actual expected "10010 4"
                 testCase "ok2" <| fun () ->
                     let expected = false
-                    let actual = checkFlag (pown 2 4 + pown 2 1) 3
+                    let actual = checkFlag (pown 2L 4 + pown 2L 1) 3
                     Expect.equal actual expected "10010 3"
-                test "negative flag" { Expect.throws (fun () -> checkFlag -1 4 |> ignore) "flag < 0" }
-                test "negative flagNumber" { Expect.throws (fun () -> checkFlag 1 -1 |> ignore) "flagNumber < 0" } ] ]
+                test "negative flag" { Expect.throws (fun () -> checkFlag -1L 4 |> ignore) "flag < 0" }
+                test "negative flagNumber" { Expect.throws (fun () -> checkFlag 1L -1 |> ignore) "flagNumber < 0" } ] ]

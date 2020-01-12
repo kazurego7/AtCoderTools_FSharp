@@ -235,10 +235,10 @@ module Algorithm =
             else if f ml > f mr then ternarySearchUpward l mr f e
             else ternarySearchUpward ml mr f e
 
-    let checkFlag (flag: int) (flagNumber: int): bool =
-        if (flag < 0) then invalidArg "flag" "flag < 0"
+    let checkFlag (flag: int64) (flagNumber: int): bool =
+        if (flag < 0L) then invalidArg "flag" "flag < 0"
         if (flagNumber < 0) then invalidArg "flagNumber" "flagNumber < 0"
-        flag >>> flagNumber &&& 1 = 1
+        flag >>> flagNumber &&& 1L = 1L
 
     let rec permutaions (xs: list<'a>): list<list<'a>> =
         match xs with
