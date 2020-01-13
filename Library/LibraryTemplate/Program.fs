@@ -394,7 +394,7 @@ module Template =
                 order.Enqueue(next)
                 reached.[next] <- true
 
-    // どの2頂点間の経路についても、通る頂点の数を最小にするように選べば最短経路が求められるので BFS が使える
+    // ヒント : 最短経路問題では、どの2頂点間の経路についても、通る頂点の数を最小にするように選べば良いので BFS が使える
     let GridGraphBFS() =
         // 与えられた高さと幅のグリッドグラフ
         let [| H; W |] = readInt32s()
