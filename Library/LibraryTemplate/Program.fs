@@ -67,8 +67,7 @@ module NumericFunctions =
 
         member this.Mod(a: int64) =
             let b = a % int64 this.divisor |> int32
-            if b < 0 then b + this.divisor
-            else b
+            if b < 0 then b + this.divisor else b
 
         member this.Mod(a: int32) = this.Mod(int64 a)
 
@@ -76,8 +75,7 @@ module NumericFunctions =
 
         member this.Sub (a: int32) (b: int32): int32 =
             let sub = (this.Mod a - this.Mod b) % this.divisor
-            if sub < 0 then sub + this.divisor
-            else sub
+            if sub < 0 then sub + this.divisor else sub
 
         member this.Mul (a: int32) (b: int32): int32 =
             (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
@@ -94,8 +92,7 @@ module NumericFunctions =
                 |> Seq.toArray
             seq { 0 .. digit }
             |> Seq.fold (fun acm i ->
-                if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i]
-                else acm) 1
+                if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i] else acm) 1
 
         /// フェルマーの小定理より
         member this.Inv(a: int32): int32 = this.Pow a (this.divisor - 2)
@@ -153,8 +150,7 @@ module NumericFunctions =
                 |> Seq.filter (fun d -> m % d = 0L)
                 |> Seq.rev
             overRootM
-            |> if int64 sqrtM * int64 sqrtM = m then Seq.tail
-               else id
+            |> if int64 sqrtM * int64 sqrtM = m then Seq.tail else id
             |> Seq.map (fun x -> m / x)
             |> Seq.append overRootM
 
@@ -204,7 +200,8 @@ module Algorithm =
         | (ok, ng) when abs (ok - ng) = 1L -> ok
         | _ ->
             let mid = (exclusiveOk + exclusiveNg) / 2L
-            if predicate mid then binarySearch predicate exclusiveNg mid
+            if predicate mid
+            then binarySearch predicate exclusiveNg mid
             else binarySearch predicate mid exclusiveOk
 
     let runLengthEncoding (source: string): seq<string * int32> =
@@ -259,24 +256,26 @@ module Algorithm =
         | y :: ys -> List.collect (insertions y) (fastPermutations ys)
 
 module DataStructure =
-        
+
     type Id = Id of Int32
 
     type private Parent(n: int32) =
         let mutable parent = Array.init n Id
+
         member this.Item
             with get (Id u) = parent.[u]
             and set (Id u) (Id v) = parent.[u] <- Id v
-    
+
     type private Size(n: int32) =
         let mutable size = Array.create n 1
+
         member this.Item
             with get (Id u) = size.[u]
             and set (Id u) next = size.[u] <- next
 
     type UnionFind(n: int32) =
         let parent = Parent n
-        
+
         let rec root u =
             if parent.[u] = u then
                 u
@@ -302,50 +301,50 @@ module DataStructure =
 
     let reverseCompare (x: 'a) (y: 'a): int32 = compare x y * -1
 
-    module PriorityQueue =
-        type PriorityQueue<'a when 'a: comparison and 'a: equality>(values: seq<'a>, comparison: 'a -> 'a -> int32) =
 
-            let dict =
-                let sorted = SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
-                Seq.groupBy id values |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
-                sorted
+    type PriorityQueue<'a when 'a: comparison and 'a: equality>(values: seq<'a>, comparison: 'a -> 'a -> int32) =
 
-            let mutable size = dict.Count
-            new(values: seq<'a>) = PriorityQueue(values, compare)
+        let dict =
+            let sorted = SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
+            Seq.groupBy id values |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
+            sorted
 
-            member this.Peek =
-                if Seq.isEmpty dict then invalidOp "queue is Empty"
+        let mutable size = dict.Count
+        new(values: seq<'a>) = PriorityQueue(values, compare)
 
-                (Seq.head dict).Value |> Seq.head
+        member this.Peek =
+            if Seq.isEmpty dict then invalidOp "queue is Empty"
 
-            member this.Size = size
+            (Seq.head dict).Value |> Seq.head
 
-            member this.Enqueue(item: 'a): unit =
-                if dict.ContainsKey item then
-                    dict.[item].Enqueue(item)
-                else
-                    let added = new Queue<'a>()
-                    added.Enqueue(item)
-                    dict.Add(item, added)
-                size <- size + 1
+        member this.Size = size
 
-            member this.Dequeue(): 'a =
-                if Seq.isEmpty dict then invalidOp "queue is Empty"
+        member this.Enqueue(item: 'a): unit =
+            if dict.ContainsKey item then
+                dict.[item].Enqueue(item)
+            else
+                let added = new Queue<'a>()
+                added.Enqueue(item)
+                dict.Add(item, added)
+            size <- size + 1
 
-                let first = Seq.head dict
-                if first.Value.Count <= 1 then dict.Remove(first.Key) |> ignore
+        member this.Dequeue(): 'a =
+            if Seq.isEmpty dict then invalidOp "queue is Empty"
 
-                size <- size - 1
-                first.Value.Dequeue()
+            let first = Seq.head dict
+            if first.Value.Count <= 1 then dict.Remove(first.Key) |> ignore
 
-            interface IEnumerable<IEnumerable<'a>> with
-                member this.GetEnumerator() =
-                    (seq {
-                        for kv in dict -> seq kv.Value
-                     }).GetEnumerator()
+            size <- size - 1
+            first.Value.Dequeue()
 
-            interface IEnumerable with
-                member this.GetEnumerator() = (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
+        interface IEnumerable<IEnumerable<'a>> with
+            member this.GetEnumerator() =
+                (seq {
+                    for kv in dict -> seq kv.Value
+                 }).GetEnumerator()
+
+        interface IEnumerable with
+            member this.GetEnumerator() = (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
 
 module Template =
     open InputOutputs
@@ -368,24 +367,32 @@ module Template =
         order.Enqueue(0)
         let reached = Array.create N false
         reached.[0] <- true
-        let pruningCondition = false // 枝刈り条件
+
+        // 求めたい値
+        ()
 
         // bfs
         while not (Seq.isEmpty order) do
-            let node = order.Dequeue()
+            let node = order.Dequeue() // 現在見ている頂点
+            let pruningCondition child = false // 枝刈り条件
+            let nexts =
+                 tree.[node]
+                |> List.filter (fun child -> not reached.[child] && not (pruningCondition child))
 
-            // ************ノードの処理***************
+            // ************ 処理 ********************
 
-            // **************************************
-            let childs = List.filter (fun child -> not reached.[child] && not pruningCondition) tree.[node]
+            // 現在の頂点による処理
+            ()
 
-            // ************エッジの処理***************
-            for child in childs do
+            // 現在の頂点と、次の頂点による処理
+            for next in nexts do
                 ()
+
             // **************************************
-            for child in childs do
-                order.Enqueue(child)
-                reached.[child] <- true
+
+            for next in nexts do
+                order.Enqueue(next)
+                reached.[next] <- true
 
 
 open Algorithm
@@ -397,4 +404,3 @@ open NumericFunctions
 let main _ =
 
     0 // return an integer exit code
- 

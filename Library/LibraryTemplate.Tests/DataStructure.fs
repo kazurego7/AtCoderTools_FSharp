@@ -2,7 +2,6 @@ module DataStructure
 
 open AtCoder.DataStructure
 open Expecto
-open PriorityQueue
 open System
 open TestTools
 
