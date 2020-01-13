@@ -471,10 +471,5 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
-    // 与えられた高さと幅のグリッドグラフ
-    let [| H; W |] = readInt32s()
-
-    let S = readMatrixNoSpace H
     
-    printMatrixNoSpace S
     0 // return an integer exit code
