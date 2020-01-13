@@ -364,8 +364,10 @@ module Template =
             tree.[b.[i] - 1] <- (a.[i] - 1) :: tree.[b.[i] - 1]
 
         let order = new Queue<int32>()
-        order.Enqueue(0)
         let reached = Array.create N false
+
+        // 最初の頂点を追加
+        order.Enqueue(0)
         reached.[0] <- true
 
         // 求めたい値
@@ -375,9 +377,7 @@ module Template =
         while not (Seq.isEmpty order) do
             let node = order.Dequeue() // 現在見ている頂点
             let pruningCondition child = false // 枝刈り条件
-            let nexts =
-                 tree.[node]
-                |> List.filter (fun child -> not reached.[child] && not (pruningCondition child))
+            let nexts = tree.[node] |> List.filter (fun child -> not reached.[child] && not (pruningCondition child))
 
             // ************ 処理 ********************
 
@@ -393,7 +393,6 @@ module Template =
             for next in nexts do
                 order.Enqueue(next)
                 reached.[next] <- true
-
 
 open Algorithm
 open DataStructure
