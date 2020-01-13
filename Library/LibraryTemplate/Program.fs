@@ -394,6 +394,56 @@ module Template =
                 order.Enqueue(next)
                 reached.[next] <- true
 
+    // どの2頂点間の経路についても、通る頂点の数を最小にするように選べば最短経路が求められるので BFS が使える
+    let GridGraphBFS() =
+        // 与えられた高さと幅のグリッドグラフ
+        let [| H; W |] = readInt32s()
+
+        let S =
+            Seq.interval 0 H
+            |> Seq.map (fun _ -> read() |> Seq.map string)
+            |> array2D
+
+        let order = new Queue<int32 * int32>()
+        let reached = Array2D.create H W false
+
+        // 最初の頂点を追加
+        order.Enqueue(0, 0)
+        reached.[0, 0] <- true
+
+        // 求めたい値
+        ()
+
+        // bfs
+        while not (Seq.isEmpty order) do
+            let (y0, x0) = order.Dequeue() // 現在見ている頂点
+
+            let allSides =
+                [ yield (y0, x0 - 1) // left
+                  yield (y0 - 1, x0) // up
+                  yield (y0, x0 + 1) // right
+                  yield (y0 + 1, x0) ] // down
+                |> List.filter (fun (y, x) -> 0 <= y && y < H && 0 <= x && x < W)
+
+            let pruningCondition y x = false // 枝刈り条件
+
+            let nexts = allSides |> List.filter (fun (y, x) -> not reached.[y, x] && not (pruningCondition y x))
+
+            // ************ 処理 ********************
+
+            // 現在の頂点による処理
+            ()
+
+            // 現在の頂点と、次の頂点による処理
+            for (y, x) in nexts do
+                ()
+
+            // **************************************
+
+            for (y, x) in nexts do
+                order.Enqueue(y, x)
+                reached.[y, x] <- true
+
 open Algorithm
 open DataStructure
 open InputOutputs
