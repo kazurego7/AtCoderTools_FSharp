@@ -259,35 +259,46 @@ module Algorithm =
         | y :: ys -> List.collect (insertions y) (fastPermutations ys)
 
 module DataStructure =
+        
+    type Id = Id of Int32
 
-    module UnionFind =
-        type private Id = Int32
+    type private Parent(n: int32) =
+        let mutable parent = Array.init n Id
+        member this.Item
+            with get (Id u) = parent.[u]
+            and set (Id u) (Id v) = parent.[u] <- Id v
+    
+    type private Size(n: int32) =
+        let mutable size = Array.create n 1
+        member this.Item
+            with get (Id u) = size.[u]
+            and set (Id u) next = size.[u] <- next
 
-        type UnionFind(n: int32) =
-            let mutable parent: Id [] = Array.init n id
+    type UnionFind(n: int32) =
+        let parent = Parent n
+        
+        let rec root u =
+            if parent.[u] = u then
+                u
+            else
+                let rootParent = root parent.[u]
+                parent.[u] <- rootParent
+                rootParent
 
-            let rec root u =
-                if parent.[u] = u then
-                    u
-                else
-                    let rootParent = root parent.[u]
-                    parent.[u] <- rootParent
-                    rootParent
+        let mutable size = Size n
 
-            let mutable size: int32 [] = Array.create n 1
+        member this.Unite (u: Id) (v: Id): unit =
+            if root u = root v then
+                ()
+            else
+                parent.[root u] <- root v
+                size.[root v] <- size.[root u] + size.[root v]
 
-            member this.Unite (u: Id) (v: Id): unit =
-                if root u = root v then
-                    ()
-                else
-                    parent.[root u] <- root v
-                    size.[root v] <- size.[root u] + size.[root v]
+        member this.Size(u: Id): int32 = size.[root u]
 
-            member this.Size(u: Id): int32 = size.[root u]
+        member this.Find (u: Id) (v: Id): bool = root u = root v
 
-            member this.Find (u: Id) (v: Id): bool = root u = root v
-
-            member this.Id(u: int32): Id = root u
+        member this.Id(u: int32): Id = root (Id u)
 
     let reverseCompare (x: 'a) (y: 'a): int32 = compare x y * -1
 
