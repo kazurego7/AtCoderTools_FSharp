@@ -24,11 +24,16 @@ module InputOutputs =
     let read(): string = Console.ReadLine()
     let reads(): string [] = read().Split()
 
-    let readMatrix (rowNum: int32): string [,] =
-        let mutable lines = Array.zeroCreate rowNum
-        for i in Seq.interval 0 rowNum do
+    let readMatrix (row: int32): string [,] =
+        let mutable lines = Array.zeroCreate row
+        for i in Seq.interval 0 row do
             lines.[i] <- reads()
-
+        lines |> array2D
+    
+    let readMatrixNoSpace (row: int32): string [,] =
+        let mutable lines = Array.zeroCreate row
+        for i in Seq.interval 0 row do
+            lines.[i] <- read () |> Seq.map  string
         lines |> array2D
 
     let readInt32(): int32 = read() |> int32
@@ -54,12 +59,27 @@ module InputOutputs =
         for item in line do
             print item
 
-    let inline printGridGraph (lines: 'a [,]): unit =
-        for i in (Seq.interval 0 lines.Length) do
-            lines.[i, *]
-            |> Seq.map string
-            |> String.concat " "
-            |> print
+    let inline printMatrix (matrix: 'a [,]): unit =
+        if matrix.Length = 0 then 
+            print ""
+        else
+            let height = matrix.[*, 0].Length
+            for i in (Seq.interval 0 height) do
+                matrix.[i, *]
+                |> Seq.map string
+                |> String.concat " "
+                |> print
+    
+    let inline printMatrixNoSpace (matrix: 'a [,]): unit =
+        if matrix.Length = 0 then 
+            print ""
+        else
+            let height = matrix.[*, 0].Length
+            for i in (Seq.interval 0 height) do
+                matrix.[i, *]
+                |> Seq.map string
+                |> String.concat ""
+                |> print
 
 module NumericFunctions =
     type Mods =
@@ -451,5 +471,10 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
+    // 与えられた高さと幅のグリッドグラフ
+    let [| H; W |] = readInt32s()
 
+    let S = readMatrixNoSpace H
+    
+    printMatrixNoSpace S
     0 // return an integer exit code
