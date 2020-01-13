@@ -464,6 +464,35 @@ module Template =
                 order.Enqueue(y, x)
                 reached.[y, x] <- true
 
+    let WarshallFloyd () =
+        // グラフの入力
+        let [| N; M |] = readInt32s()
+        let abc = readMatrixNoSpace M
+        let a = abc.[*, 0] |> Array.map int32
+        let b = abc.[*, 1] |> Array.map int32
+        let c = abc.[*, 2] |> Array.map int64
+
+        // 隣接行列の初期化
+        let inf = pown 2L 60
+        let G = Array2D.create N N inf
+
+        for y in Seq.interval 0 N do
+            for x in Seq.interval 0 N do
+                if y = x then
+                    G.[y,x] <- 0L
+        
+        for i in Seq.interval 0 M do
+            G.[a.[i], b.[i]] <- c.[i]
+            G.[b.[i], a.[i]] <- c.[i]
+
+        for k in Seq.interval 0 N do
+            for i in Seq.interval 0 N do
+                for j in Seq.interval 0 N do
+                    G.[i,j] <- min G.[i,j] (G.[i,k] + G.[k,j])
+        
+        
+
+
 open Algorithm
 open DataStructure
 open InputOutputs
@@ -471,5 +500,5 @@ open NumericFunctions
 
 [<EntryPoint>]
 let main _ =
-    
+
     0 // return an integer exit code
