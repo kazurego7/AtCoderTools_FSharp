@@ -12,6 +12,6 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.2.108
+        dotnet-version: 3.3
     - name: Test with dotnet for expecto
       run: dotnet run -p ./LibraryTemplate.Tests
