@@ -7,7 +7,7 @@ open TestTools
 
 [<Tests>]
 let tests =
-    let mods = { Mods.divisor = 1000_000_007 }
+    let mods = { Mods.Divisor = 1000_000_007 }
     testList "NumericFunctions"
         [ testList "Mods.Mod"
               [ testValueEqual (mods.Mod(int64 Int32.MaxValue + 1L)) 147483634 "over Int32"
@@ -59,11 +59,6 @@ let tests =
                 testSeqEqual (primes 13) [ 2; 3; 5; 7; 11; 13 ] "prime" ]
           testList "primeFactrization"
               [ testError (fun () -> primeFactrization 1L) "n <= 1"
-                testSeqEqual (primeFactrization 60L)
-                    [ 2L, 2L
-                      3L, 1L
-                      5L, 1L ] "coprime"
+                testSeqEqual (primeFactrization 60L) [ 2L, 2L; 3L, 1L; 5L, 1L ] "coprime"
                 testSeqEqual (primeFactrization 7L) [ 7L, 1L ] "prime"
-                testSeqEqual (primeFactrization 14L)
-                    [ 2L, 1L
-                      7L, 1L ] "prime * 2" ] ]
+                testSeqEqual (primeFactrization 14L) [ 2L, 1L; 7L, 1L ] "prime * 2" ] ]
