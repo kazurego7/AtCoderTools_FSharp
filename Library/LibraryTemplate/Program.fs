@@ -8,7 +8,8 @@ open System.Collections.Generic
 #nowarn "0025" // パターンマッチが不完全である警告の無効
 
 module Seq =
-    let interval startInclusive endExclusive = seq { startInclusive .. (endExclusive - 1) }
+    let interval startInclusive endExclusive =
+        seq { startInclusive .. (endExclusive - 1) }
 
     let inline mapAdjacent (op: 'a -> 'a -> 'b) (source: seq<'a>): seq<'b> =
         match source with
@@ -17,29 +18,32 @@ module Seq =
 
 module Array2D =
     let inline transpose (array: 'a [,]): 'a [,] =
-        let transposed = Array2D.zeroCreate (Array2D.length2 array) (Array2D.length1 array)
-        transposed |> Array2D.mapi (fun i k _ -> array.[k, i])
+        let transposed =
+            Array2D.zeroCreate (Array2D.length2 array) (Array2D.length1 array)
+
+        transposed
+        |> Array2D.mapi (fun i k _ -> array.[k, i])
 
 module InputOutputs =
-    let read(): string = Console.ReadLine()
-    let reads(): string [] = read().Split()
+    let read (): string = Console.ReadLine()
+    let reads (): string [] = read().Split()
 
     let readMatrix (row: int32): string [,] =
         let mutable lines = Array.zeroCreate row
         for i in Seq.interval 0 row do
-            lines.[i] <- reads()
+            lines.[i] <- reads ()
         lines |> array2D
-    
+
     let readMatrixNoSpace (row: int32): string [,] =
         let mutable lines = Array.zeroCreate row
         for i in Seq.interval 0 row do
-            lines.[i] <- read () |> Seq.map  string
+            lines.[i] <- read () |> Seq.map string
         lines |> array2D
 
-    let readInt32(): int32 = read() |> int32
-    let readInt64(): int64 = read() |> int64
-    let readInt32s(): int32 [] = reads() |> Array.map int32
-    let readInt64s(): int64 [] = reads() |> Array.map int64
+    let readInt32 (): int32 = read () |> int32
+    let readInt64 (): int64 = read () |> int64
+    let readInt32s (): int32 [] = reads () |> Array.map int32
+    let readInt64s (): int64 [] = reads () |> Array.map int64
 
     let readMatrixInt32 (rowNum: int32): int32 [,] = readMatrix rowNum |> Array2D.map int32
 
@@ -60,7 +64,7 @@ module InputOutputs =
             print item
 
     let inline printMatrix (matrix: 'a [,]): unit =
-        if matrix.Length = 0 then 
+        if matrix.Length = 0 then
             print ""
         else
             let height = matrix.[*, 0].Length
@@ -69,9 +73,9 @@ module InputOutputs =
                 |> Seq.map string
                 |> String.concat " "
                 |> print
-    
+
     let inline printMatrixNoSpace (matrix: 'a [,]): unit =
-        if matrix.Length = 0 then 
+        if matrix.Length = 0 then
             print ""
         else
             let height = matrix.[*, 0].Length
@@ -83,22 +87,23 @@ module InputOutputs =
 
 module NumericFunctions =
     type Mods =
-        { divisor: int32 }
+        { Divisor: int32 }
 
         member this.Mod(a: int64) =
-            let b = a % int64 this.divisor |> int32
-            if b < 0 then b + this.divisor else b
+            let b = a % int64 this.Divisor |> int32
+            if b < 0 then b + this.Divisor else b
 
         member this.Mod(a: int32) = this.Mod(int64 a)
 
-        member this.Add (a: int32) (b: int32): int32 = (this.Mod a + this.Mod b) % this.divisor
+        member this.Add (a: int32) (b: int32): int32 = (this.Mod a + this.Mod b) % this.Divisor
 
         member this.Sub (a: int32) (b: int32): int32 =
-            let sub = (this.Mod a - this.Mod b) % this.divisor
-            if sub < 0 then sub + this.divisor else sub
+            let sub = (this.Mod a - this.Mod b) % this.Divisor
+            if sub < 0 then sub + this.Divisor else sub
 
         member this.Mul (a: int32) (b: int32): int32 =
-            (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.divisor |> int32
+            (int64 (this.Mod a) * int64 (this.Mod b)) % int64 this.Divisor
+            |> int32
 
         member this.Div (a: int32) (b: int32): int32 = this.Mul a (this.Inv b)
 
@@ -110,12 +115,12 @@ module NumericFunctions =
                 seq { 0 .. digit }
                 |> Seq.scan (fun acm _ -> this.Mul acm acm) b
                 |> Seq.toArray
+
             seq { 0 .. digit }
-            |> Seq.fold (fun acm i ->
-                if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i] else acm) 1
+            |> Seq.fold (fun acm i -> if ((n >>> i) &&& 1) = 1 then this.Mul acm seqs.[i] else acm) 1
 
         /// フェルマーの小定理より
-        member this.Inv(a: int32): int32 = this.Pow a (this.divisor - 2)
+        member this.Inv(a: int32): int32 = this.Pow a (this.Divisor - 2)
 
         member this.Perm (n: int32) (k: int32): int32 =
             match (n, k) with
@@ -138,7 +143,8 @@ module NumericFunctions =
                     | (n, k) when n < k -> table.[n, k] <- 0
                     | (_, k) when k = 0 -> table.[n, k] <- 1
                     | _ ->
-                        table.[n, k] <- int64 table.[n - 1, k - 1] + int64 table.[n - 1, k] % int64 this.divisor
+                        table.[n, k] <- int64 table.[n - 1, k - 1]
+                                        + int64 table.[n - 1, k] % int64 this.Divisor
                                         |> int32
             table
 
@@ -155,7 +161,11 @@ module NumericFunctions =
         | _ -> gcd n (m % n)
 
     /// gcdを使っているため O(Log N)
-    let lcm (m: int64) (n: int64): int64 = (bigint m) * (bigint n) / bigint (gcd m n) |> Checked.int64
+    let lcm (m: int64) (n: int64): int64 =
+        (bigint m)
+        * (bigint n)
+        / bigint (gcd m n)
+        |> Checked.int64
 
     /// O(√N)
     let divisors (m: int64): seq<int64> =
@@ -169,6 +179,7 @@ module NumericFunctions =
                 |> Seq.map int64
                 |> Seq.filter (fun d -> m % d = 0L)
                 |> Seq.rev
+
             overRootM
             |> if int64 sqrtM * int64 sqrtM = m then Seq.tail else id
             |> Seq.map (fun x -> m / x)
@@ -189,7 +200,9 @@ module NumericFunctions =
             let sqrtN = int32 (sqrt (float n))
             let mutable sieve = Seq.interval 2 (n + 1) |> Seq.toList
             let mutable ps = []
-            while not (List.isEmpty sieve) && List.head sieve <= sqrtN do
+            while not (List.isEmpty sieve)
+                  && List.head sieve
+                  <= sqrtN do
                 let m = List.head sieve
                 ps <- m :: ps
                 sieve <- List.filter (fun p -> p % m <> 0) sieve
@@ -220,15 +233,16 @@ module Algorithm =
         | (ok, ng) when abs (ok - ng) = 1L -> ok
         | _ ->
             let mid = (exclusiveOk + exclusiveNg) / 2L
-            if predicate mid
-            then binarySearch predicate exclusiveNg mid
-            else binarySearch predicate mid exclusiveOk
+            if predicate mid then binarySearch predicate exclusiveNg mid else binarySearch predicate mid exclusiveOk
 
     let runLengthEncoding (source: string): seq<string * int32> =
         match source.Length with
         | n when n = 0 -> Seq.empty
         | n ->
-            let cutIxs = Seq.interval 1 n |> Seq.filter (fun i -> source.[i] <> source.[i - 1])
+            let cutIxs =
+                Seq.interval 1 n
+                |> Seq.filter (fun i -> source.[i] <> source.[i - 1])
+
             Seq.append (Seq.append (seq { yield 0 }) cutIxs) (seq { yield n })
             |> Seq.mapAdjacent (fun i0 i1 -> (string source.[i0], i1 - i0))
 
@@ -270,7 +284,10 @@ module Algorithm =
         let rec insertions (x: 'a) (ys: list<'a>): list<list<'a>> =
             match ys with
             | [] -> [ [ x ] ]
-            | (z :: zs) as l -> (x :: l) :: (List.map (fun w -> z :: w) (insertions x zs))
+            | (z :: zs) as l ->
+                (x :: l)
+                :: (List.map (fun w -> z :: w) (insertions x zs))
+
         match xs with
         | [] -> [ [] ]
         | y :: ys -> List.collect (insertions y) (fastPermutations ys)
@@ -325,8 +342,11 @@ module DataStructure =
     type PriorityQueue<'a when 'a: comparison and 'a: equality>(values: seq<'a>, comparison: 'a -> 'a -> int32) =
 
         let dict =
-            let sorted = SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
-            Seq.groupBy id values |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
+            let sorted =
+                SortedDictionary<'a, Queue<'a>>(ComparisonIdentity.FromFunction comparison)
+
+            Seq.groupBy id values
+            |> Seq.iter (fun (key, value) -> sorted.Add(key, (new Queue<'a>(value))))
             sorted
 
         let mutable size = dict.Count
@@ -358,10 +378,7 @@ module DataStructure =
             first.Value.Dequeue()
 
         interface IEnumerable<IEnumerable<'a>> with
-            member this.GetEnumerator() =
-                (seq {
-                    for kv in dict -> seq kv.Value
-                 }).GetEnumerator()
+            member this.GetEnumerator() = (seq { for kv in dict -> seq kv.Value }).GetEnumerator()
 
         interface IEnumerable with
             member this.GetEnumerator() = (this :> IEnumerable<IEnumerable<'a>>).GetEnumerator() :> IEnumerator
@@ -369,9 +386,9 @@ module DataStructure =
 module Template =
     open InputOutputs
     /// 木構造の BFS ( DFS は、 order の Queue の部分を Stack にして、 Dequeue を Pop 、 Enqueue を Push にすれば良いだけ)
-    let TreeBFS() =
+    let TreeBFS () =
         // 与えられた頂点数と辺
-        let N = readInt32()
+        let N = readInt32 ()
         let ab = readMatrixInt32 (N - 1)
         let a = ab.[*, 0]
         let b = ab.[*, 1]
@@ -397,7 +414,12 @@ module Template =
         while not (Seq.isEmpty order) do
             let node = order.Dequeue() // 現在見ている頂点
             let pruningCondition child = false // 枝刈り条件
-            let nexts = tree.[node] |> List.filter (fun child -> not reached.[child] && not (pruningCondition child))
+
+            let nexts =
+                tree.[node]
+                |> List.filter (fun child ->
+                    not reached.[child]
+                    && not (pruningCondition child))
 
             // ************ 処理 ********************
 
@@ -415,13 +437,13 @@ module Template =
                 reached.[next] <- true
 
     // ヒント : 最短経路問題では、どの2頂点間の経路についても、通る頂点の数を最小にするように選べば良いので BFS が使える
-    let GridGraphBFS() =
+    let GridGraphBFS () =
         // 与えられた高さと幅のグリッドグラフ
-        let [| H; W |] = readInt32s()
+        let [| H; W |] = readInt32s ()
 
         let S =
             Seq.interval 0 H
-            |> Seq.map (fun _ -> read() |> Seq.map string)
+            |> Seq.map (fun _ -> read () |> Seq.map string)
             |> array2D
 
         let order = new Queue<int32 * int32>()
@@ -447,7 +469,9 @@ module Template =
 
             let pruningCondition y x = false // 枝刈り条件
 
-            let nexts = allSides |> List.filter (fun (y, x) -> not reached.[y, x] && not (pruningCondition y x))
+            let nexts =
+                allSides
+                |> List.filter (fun (y, x) -> not reached.[y, x] && not (pruningCondition y x))
 
             // ************ 処理 ********************
 
@@ -466,7 +490,7 @@ module Template =
 
     let WarshallFloyd () =
         // グラフの入力
-        let [| N; M |] = readInt32s()
+        let [| N; M |] = readInt32s ()
         let abc = readMatrixNoSpace M
         let a = abc.[*, 0] |> Array.map int32
         let b = abc.[*, 1] |> Array.map int32
@@ -478,9 +502,8 @@ module Template =
 
         for y in Seq.interval 0 N do
             for x in Seq.interval 0 N do
-                if y = x then
-                    G.[y,x] <- 0L
-        
+                if y = x then G.[y, x] <- 0L
+
         for i in Seq.interval 0 M do
             G.[a.[i], b.[i]] <- c.[i]
             G.[b.[i], a.[i]] <- c.[i]
@@ -488,10 +511,7 @@ module Template =
         for k in Seq.interval 0 N do
             for i in Seq.interval 0 N do
                 for j in Seq.interval 0 N do
-                    G.[i,j] <- min G.[i,j] (G.[i,k] + G.[k,j])
-        
-        
-
+                    G.[i, j] <- min G.[i, j] (G.[i, k] + G.[k, j])
 
 open Algorithm
 open DataStructure
