@@ -14,4 +14,4 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Test with dotnet for expecto
-      run: dotnet run -p ./Library/LibraryTemplate.Tests
+      run: dotnet run -p ./LibraryTemplate.Tests
